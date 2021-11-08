@@ -1,4 +1,9 @@
 import { createConnection } from 'typeorm';
+import { Cargo } from './cargo/entidades/cargo.entity';
+import { Usuario } from './usuario/entidades/usuario.entity';
+import { UsuarioPerfil } from './usuario/entidades/usuario_perfil.entity';
+import { UsuarioPontuacao } from './usuario/entidades/usuario_pontuacao.entity';
+import { UsuarioSocial } from './usuario/entidades/usuario_social.entity';
 
 export const databaseProviders = [
   {
@@ -11,7 +16,7 @@ export const databaseProviders = [
         username: 'k0zhw26ohj06kuf4',
         password: 'zqkftuhc320wd7qw',
         database: 'onnzvvnbnuvwplfs',
-        entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+        entities: [Usuario, UsuarioPerfil, UsuarioSocial, UsuarioPontuacao, Cargo],
         synchronize: true,
       }),
   },
