@@ -14,7 +14,6 @@ export class CargoService {
     return this.cargoRepository.find();
   }
 
-  //resolver
   async criarCargo(cargo: DeepPartial<CargoDto>): Promise<CargoDto> {
     return await this.cargoRepository.save(cargo);
   }
