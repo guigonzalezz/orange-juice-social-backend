@@ -6,9 +6,9 @@ export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) { }
 
 
-  @Get('listar')
+  @Get('listarTodos')
   async listar(): Promise<any[]> {
-    return this.usuarioService.findAll();
+    return this.usuarioService.carregarTodosUsuarios();
   }
 
   @Get('buscarUsuario')

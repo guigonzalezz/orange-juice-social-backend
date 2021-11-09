@@ -24,10 +24,27 @@ export class UsuarioService {
     private cargoRepository: Repository<any>
   ) { }
 
-  async findAll(): Promise<any[]> {
-    return this.usuarioRepository.find();
+  //criar função que traz feedbacks e utilizar
+  async carregarTodosUsuarios(): Promise<UsuarioRespostaDto[]> {
+    let retorno: UsuarioRespostaDto[];
+    let usuarios: UsuarioDto[] = await this.usuarioRepository.find();
+    usuarios.map(async (item) => {
+      retorno.push({
+        id_usuario: item.id_usuario,
+        ativo_SN: item.ativo_SN,
+        colaborador_SN: item.colaborador_SN,
+        stamp_created: item.stamp_created,
+        cargo: await this.cargoRepository.findOne(item.id_cargo),
+        pontos: await this.usuarioPontuacaoRepository.findOne(item.id_usuario).pontos,
+        social: await this.usuarioSocialRepository.findOne(item.id_usuario),
+        perfil: await this.usuarioPerfilRepository.findOne(item.id_usuario),
+        feedback: null,
+      })
+    })
+    return retorno;
   }
 
+  //criar função que traz feedbacks e utilizar
   async carregarInfoUsuario(id_usuario: number): Promise<UsuarioRespostaDto> {
     let usuario: UsuarioDto = await this.usuarioRepository.findOne(id_usuario);
     let social: UsuarioSocialDto = await this.usuarioSocialRepository.findOne(id_usuario);
@@ -35,7 +52,7 @@ export class UsuarioService {
     let pontos: UsuarioPontuacaoDto = await this.usuarioPontuacaoRepository.findOne(id_usuario);
     let cargo: CargoDto = await this.cargoRepository.findOne(usuario.id_cargo);
 
-    let answer: UsuarioRespostaDto = {
+    let retorno: UsuarioRespostaDto = {
       id_usuario: usuario.id_usuario,
       ativo_SN: usuario.ativo_SN,
       colaborador_SN: usuario.colaborador_SN,
@@ -47,7 +64,7 @@ export class UsuarioService {
       feedback: null,
     }
 
-    return answer;
+    return retorno;
   }
 
   async carregarInfoSocial(id_usuario: number): Promise<any> {
