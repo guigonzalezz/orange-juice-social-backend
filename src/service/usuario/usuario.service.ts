@@ -1,5 +1,8 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Usuario } from 'src/repository/database/usuario/entidades/usuario.entity';
+import { Repository, getConnection } from 'typeorm';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+import { CargoDto } from '../cargo/dto/cargo.dto';
 import { UsuarioDto } from './dto/usuario.dto';
 import { UsuarioPerfilDto } from './dto/usuario_perfil.dto';
 import { UsuarioPontuacaoDto } from './dto/usuario_pontuacao.dto';
@@ -26,21 +29,21 @@ export class UsuarioService {
   }
 
   async carregarInfoUsuario(id_usuario: number): Promise<UsuarioRespostaDto> {
-    let usuario: UsuarioDto = this.usuarioRepository.findOne(id_usuario);
-    let social: UsuarioSocialDto = this.usuarioSocialRepository.findOne(id_usuario);
-    let perfil: UsuarioPerfilDto = this.usuarioPerfilRepository.findOne(id_usuario);
-    let pontos: UsuarioPontuacaoDto = this.usuarioPontuacaoRepository.findOne(id_usuario);
-    let cargo = this.cargoRepository.findOne();
+    let usuario: UsuarioDto = await this.usuarioRepository.findOne(id_usuario);
+    let social: UsuarioSocialDto = await this.usuarioSocialRepository.findOne(id_usuario);
+    let perfil: UsuarioPerfilDto = await this.usuarioPerfilRepository.findOne(id_usuario);
+    let pontos: UsuarioPontuacaoDto = await this.usuarioPontuacaoRepository.findOne(id_usuario);
+    let cargo: CargoDto = await this.cargoRepository.findOne(usuario.id_cargo);
 
-    let answer = {
+    let answer: UsuarioRespostaDto = {
       id_usuario: usuario.id_usuario,
       ativo_SN: usuario.ativo_SN,
       colaborador_SN: usuario.colaborador_SN,
       stamp_created: usuario.stamp_created,
-      cargo,
+      cargo: cargo,
       pontos: pontos.pontos,
-      social,
-      perfil,
+      social: social,
+      perfil: perfil,
       feedback: null,
     }
 
@@ -70,8 +73,15 @@ export class UsuarioService {
   }
 
   async toggleAtivoOuInativo(id_usuario: number) {
-    //const aux = await this.usuarioRepository.findOne(id_usuario).ativo_SN;
-    await this.usuarioRepository.update(id_usuario, { ativo_SN: await this.usuarioRepository.findOne(id_usuario).ativo_SN == 'S' ? 'N' : 'S' });
+    const aux = await this.usuarioRepository.findOne(id_usuario);
+
+    await getConnection()
+      .createQueryBuilder()
+      .update(Usuario)
+      .set({ ativo_SN: aux.ativo_SN == 'S' ? 'N' : 'S' })
+      .where("id_usuario = :id", { id: id_usuario })
+      .execute();
+    //await this.usuarioRepository.update(id_usuario, { ativo_SN:  });
   }
 
 }
