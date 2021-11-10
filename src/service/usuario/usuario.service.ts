@@ -26,25 +26,30 @@ export class UsuarioService {
     private cargoRepository: Repository<any>
   ) { }
 
-  async cadastrarUsuario(usuario: UsuarioCadastroDto): Promise<UsuarioRespostaDto> {
+  async cadastrarUsuario(usuario: UsuarioCadastroDto) {//Promise<UsuarioRespostaDto> {
     const usuarioEntity: Usuario = Usuario.create();
     usuarioEntity.ativo_SN = 'S'
     usuarioEntity.colaborador_SN = 'S'
     usuarioEntity.stamp_created = new Date()
     usuarioEntity.stamp_disable = null
     usuarioEntity.id_cargo = usuario.id_cargo
+    usuarioEntity.perfil = new UsuarioPerfil()
     usuarioEntity.perfil.nome = usuario.nome
     usuarioEntity.perfil.email = usuario.email
     usuarioEntity.perfil.email_empresarial = usuario.email_empresarial
     usuarioEntity.perfil.cpf = usuario.cpf
-    usuarioEntity.perfil.data_nasc = usuario.data_nasc
+    usuarioEntity.perfil.data_nasc = new Date(usuario.data_nasc)
     usuarioEntity.perfil.contato = usuario.contato
     usuarioEntity.perfil.cidade = usuario.cidade
     usuarioEntity.perfil.estado = usuario.estado
     usuarioEntity.perfil.pais = usuario.pais
     usuarioEntity.perfil.senha = usuario.cpf //Primeira senha será o cpf dele
+    usuarioEntity.social = new UsuarioSocial()
+    //achar uma forma de registrar o blob
     usuarioEntity.social.avatar = new Blob(['../../images/default-profile-user.jpg'], { type: 'image/jpg' });
     usuarioEntity.social.banner = new Blob(['../../images/default-banner-user.png'], { type: 'image/png' });
+
+    return usuarioEntity;
     const usuarioSalvo = await Usuario.save(usuarioEntity)
     //if (usuarioSalvo) // envia email
     //https://notiz.dev/blog/send-emails-with-nestjs
@@ -118,7 +123,7 @@ export class UsuarioService {
   async atualizarUsuario(id_usuario: number, data: QueryDeepPartialEntity<UsuarioDto>): Promise<UsuarioDto> {
     const element = await this.usuarioRepository.findOneOrFail(id_usuario);
     if (!element.id_usuario) {
-      console.error('Element não existe!');
+      console.error('Usuario não existe!');
     }
     await this.usuarioRepository.update(id_usuario, data);
     return await this.usuarioRepository.findOne({ id_usuario });

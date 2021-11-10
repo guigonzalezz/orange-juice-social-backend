@@ -4,7 +4,6 @@
 export interface UsuarioCadastroDto {
   ativo_SN: string;
   colaborador_SN: string;
-  stamp_created: Date;
   nome: string;
   email: string;
   email_empresarial: string;

@@ -48,11 +48,11 @@ export class UsuarioSocial extends BaseEntity {
   @Column({ length: 100 })
   facebook_link: string;
 
-  @Column()
-  avatar: Blob;//Blob;
+  @Column("blob", { nullable: true })
+  avatar
 
-  @Column()
-  banner: Blob;//Blob;
+  @Column("blob", { nullable: true })
+  banner
 
   @Column()
   experiencia: string;//JSON;
