@@ -1,7 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from 'typeorm';
 
 @Entity()
-export class UsuarioSocial {
+export class UsuarioSocial extends BaseEntity {
 
   @PrimaryGeneratedColumn()
   id_usuario: number;
@@ -49,10 +49,10 @@ export class UsuarioSocial {
   facebook_link: string;
 
   @Column()
-  avatar: string;//Blob;
+  avatar: Blob;//Blob;
 
   @Column()
-  banner: string;//Blob;
+  banner: Blob;//Blob;
 
   @Column()
   experiencia: string;//JSON;

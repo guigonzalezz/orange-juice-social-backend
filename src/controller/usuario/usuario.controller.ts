@@ -1,10 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { UsuarioService } from '../../service/usuario/usuario.service';
 
 @Controller('usuario')
 export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) { }
 
+  @Post('cadastrarUsuario')
+  async cadastrarUsuario(@Body() data) {
+    return this.usuarioService.cadastrarUsuario(data);
+  }
 
   @Get('listarTodos')
   async listar(): Promise<any[]> {

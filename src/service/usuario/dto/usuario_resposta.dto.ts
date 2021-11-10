@@ -1,5 +1,6 @@
 import { CargoDto } from "src/service/cargo/dto/cargo.dto";
 import { UsuarioPerfilDto } from "./usuario_perfil.dto";
+import { UsuarioPontuacaoDto } from "./usuario_pontuacao.dto";
 import { UsuarioSocialDto } from "./usuario_social.dto";
 
 
@@ -11,8 +12,8 @@ export interface UsuarioRespostaDto {
   colaborador_SN: string;
   stamp_created: Date;
   perfil: UsuarioPerfilDto
-  cargo: string;
+  cargo: string | CargoDto;
   social: UsuarioSocialDto;
-  pontos: number;
-  feedback: any;//FeedbacksDto;
+  pontos: number | UsuarioPontuacaoDto;
+  feedback?: any;//FeedbacksDto;
 }

@@ -1,8 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, BaseEntity } from 'typeorm';
 import * as crypto from 'crypto';
 
 @Entity()
-export class UsuarioPerfil {
+export class UsuarioPerfil extends BaseEntity {
 
   @PrimaryGeneratedColumn()
   id_usuario: number;
@@ -12,6 +12,10 @@ export class UsuarioPerfil {
 
   @Column({ length: 50 })
   email: string;
+
+  @Column({ length: 50 })
+  email_empresarial: string;
+
 
   @Column()
   data_nasc: Date;

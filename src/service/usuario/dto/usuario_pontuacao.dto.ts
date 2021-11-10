@@ -2,6 +2,6 @@
 
 export interface UsuarioPontuacaoDto {
   id_usuario: number;
-  id_pontuacaoo: number;
+  id_pontuacao: number;
   pontos: number;
 }
