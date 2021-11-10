@@ -11,7 +11,7 @@ export interface UsuarioRespostaDto {
   colaborador_SN: string;
   stamp_created: Date;
   perfil: UsuarioPerfilDto
-  cargo: CargoDto;
+  cargo: string;
   social: UsuarioSocialDto;
   pontos: number;
   feedback: any;//FeedbacksDto;
