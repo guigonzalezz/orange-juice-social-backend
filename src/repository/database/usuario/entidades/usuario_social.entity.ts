@@ -1,10 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, OneToOne, JoinColumn } from 'typeorm';
+import { Usuario } from './usuario.entity';
 
 @Entity()
 export class UsuarioSocial extends BaseEntity {
 
   @PrimaryGeneratedColumn()
-  id_usuario: number;
+  id_usuario_social: number;
 
   @Column()
   seguidores: string;//JSON;
@@ -48,15 +49,22 @@ export class UsuarioSocial extends BaseEntity {
   @Column({ length: 100 })
   facebook_link: string;
 
-  @Column("blob", { nullable: true })
-  avatar
+  @Column()
+  avatar: string;
 
-  @Column("blob", { nullable: true })
-  banner
+  @Column()
+  banner: string;
 
   @Column()
   experiencia: string;//JSON;
 
   @Column()
   formacao: string;//JSON;
+
+  @Column({ nullable: true })
+  id_usuario: number;
+
+  @OneToOne(() => Usuario)
+  @JoinColumn({ name: 'id_usuario' })
+  usuario: Usuario
 }

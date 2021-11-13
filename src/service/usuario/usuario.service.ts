@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Usuario } from 'src/repository/database/usuario/entidades/usuario.entity';
 import { UsuarioPerfil } from 'src/repository/database/usuario/entidades/usuario_perfil.entity';
+import { UsuarioPontuacao } from 'src/repository/database/usuario/entidades/usuario_pontuacao.entity';
 import { UsuarioSocial } from 'src/repository/database/usuario/entidades/usuario_social.entity';
 import { Repository, getConnection, DeepPartial } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
@@ -27,34 +28,52 @@ export class UsuarioService {
   ) { }
 
   async cadastrarUsuario(usuario: UsuarioCadastroDto) {//Promise<UsuarioRespostaDto> {
-    const usuarioEntity: Usuario = Usuario.create();
-    usuarioEntity.ativo_SN = 'S'
-    usuarioEntity.colaborador_SN = 'S'
-    usuarioEntity.stamp_created = new Date()
-    usuarioEntity.stamp_disable = null
-    usuarioEntity.id_cargo = usuario.id_cargo
-    usuarioEntity.perfil = new UsuarioPerfil()
-    usuarioEntity.perfil.nome = usuario.nome
-    usuarioEntity.perfil.email = usuario.email
-    usuarioEntity.perfil.email_empresarial = usuario.email_empresarial
-    usuarioEntity.perfil.cpf = usuario.cpf
-    usuarioEntity.perfil.data_nasc = new Date(usuario.data_nasc)
-    usuarioEntity.perfil.contato = usuario.contato
-    usuarioEntity.perfil.cidade = usuario.cidade
-    usuarioEntity.perfil.estado = usuario.estado
-    usuarioEntity.perfil.pais = usuario.pais
-    usuarioEntity.perfil.senha = usuario.cpf //Primeira senha será o cpf dele
-    usuarioEntity.social = new UsuarioSocial()
-    //achar uma forma de registrar o blob
-    usuarioEntity.social.avatar = new Blob(['../../images/default-profile-user.jpg'], { type: 'image/jpg' });
-    usuarioEntity.social.banner = new Blob(['../../images/default-banner-user.png'], { type: 'image/png' });
+    const usuario_general: Usuario = Usuario.create({
+      ativo_SN: 'S',
+      colaborador_SN: 'S',
+      stamp_created: new Date(),
+      stamp_disable: null,
+      id_cargo: usuario.id_cargo
+    });
+    await usuario_general.save();
 
-    return usuarioEntity;
-    const usuarioSalvo = await Usuario.save(usuarioEntity)
+    const usuario_perfil: UsuarioPerfil = UsuarioPerfil.create({
+      nome: usuario.nome,
+      email: usuario.email,
+      email_empresarial: usuario.email_empresarial,
+      cpf: usuario.cpf,
+      data_nasc: new Date(usuario.data_nasc),
+      contato: usuario.contato,
+      cidade: usuario.cidade,
+      estado: usuario.estado,
+      pais: usuario.pais,
+      senha: usuario.cpf,//Primeira senha será o cpf dele
+      id_usuario: usuario_general.id_usuario
+    });
+    await usuario_perfil.save();
+
+    const usuario_social: UsuarioSocial = UsuarioSocial.create({
+      avatar: 'usuarios/avatar/default.jpg',
+      banner: 'usuarios/banner/default.png',
+      id_usuario: usuario_general.id_usuario
+    });
+    await usuario_social.save();
+
+    const usuario_pontos: UsuarioPontuacao = UsuarioPontuacao.create({
+      id_usuario: usuario_general.id_usuario,
+      pontos: 0
+    });
+    await usuario_pontos.save();
+
+    return {
+      general: usuario_general,
+      perfil: usuario_perfil,
+      social: usuario_social,
+      pontuacao: usuario_pontos
+    };
     //if (usuarioSalvo) // envia email
     //https://notiz.dev/blog/send-emails-with-nestjs
 
-    return usuarioSalvo;
   }
 
   /**

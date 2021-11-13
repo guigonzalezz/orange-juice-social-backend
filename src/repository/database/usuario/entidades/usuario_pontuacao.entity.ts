@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, OneToOne, JoinColumn } from 'typeorm';
+import { Usuario } from './usuario.entity';
 
 @Entity()
 export class UsuarioPontuacao extends BaseEntity {
@@ -7,8 +8,12 @@ export class UsuarioPontuacao extends BaseEntity {
   id_pontuacao: number;
 
   @Column()
+  pontos: number;
+
+  @Column({ nullable: true })
   id_usuario: number;
 
-  @Column()
-  pontos: number;
+  @OneToOne(() => Usuario)
+  @JoinColumn({ name: 'id_usuario' })
+  usuario: Usuario
 }

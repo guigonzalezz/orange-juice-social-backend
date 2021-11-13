@@ -1,11 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, BaseEntity } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, BaseEntity, OneToOne, JoinColumn } from 'typeorm';
 import * as crypto from 'crypto';
+import { Usuario } from './usuario.entity';
 
 @Entity()
 export class UsuarioPerfil extends BaseEntity {
 
   @PrimaryGeneratedColumn()
-  id_usuario: number;
+  id_usuario_perfil: number;
 
   @Column({ length: 90 })
   nome: string;
@@ -42,4 +43,13 @@ export class UsuarioPerfil extends BaseEntity {
 
   @Column({ length: 35 })
   pais: string;
+
+  @Column({ nullable: true })
+  id_usuario: number;
+
+  @OneToOne(() => Usuario)
+  @JoinColumn({ name: 'id_usuario' })
+  usuario: Usuario
 }
+
+

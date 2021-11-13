@@ -2,14 +2,11 @@
 
 
 export interface UsuarioCadastroDto {
-  ativo_SN: string;
-  colaborador_SN: string;
   nome: string;
   email: string;
   email_empresarial: string;
   data_nasc: Date;
   contato: string;
-  senha: string;
   cpf: string;
   cidade: string;
   estado: string;

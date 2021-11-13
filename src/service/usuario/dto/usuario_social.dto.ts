@@ -1,6 +1,3 @@
-import { Blob } from "buffer";
-
-
 export interface UsuarioSocialDto {
   seguidores: string;
   seguindo: string;
@@ -15,8 +12,8 @@ export interface UsuarioSocialDto {
   instagram_link: string;
   stackoverflow_link: string;
   facebook_link: string;
-  avatar: Blob;
-  banner: Blob;
+  avatar: string;
+  banner: string;
   titulo: string;
   experiencia: string;
   formacao: string;
