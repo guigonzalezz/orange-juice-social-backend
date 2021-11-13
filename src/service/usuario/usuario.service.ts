@@ -128,22 +128,23 @@ export class UsuarioService {
   }
 
   async atualizarUsuarioPerfil(id_usuario: number, data) {
-    const element = await this.usuarioRepository.findOneOrFail(id_usuario);
-    if (!element.id_usuario) {
-      console.error('Usuario não existe!');
-      return { error: 'Usuario não existe!' };
-    }
+    if (!await this.usuarioRepository.findOne(id_usuario)) return { error: 'Usuario não existe!' };
     await this.usuarioPerfilRepository.update({ id_usuario }, data);
     return await this.usuarioPerfilRepository.findOne({ id_usuario });
   }
 
   async deletarUsuario(id_usuario: number) {
-    await this.usuarioSocialRepository.delete({ id_usuario });
-    await this.usuarioPerfilRepository.delete({ id_usuario });
-    await this.usuarioPontuacaoRepository.delete({ id_usuario });
-    await this.usuarioRepository.delete({ id_usuario });
-    //no futuro com o uso de mais tabelas será preciso conectar outros repositórios
-    return { deleted: true };
+    if (!id_usuario) return { error: "Passe o parametro corretamente!" };
+    if (await this.usuarioRepository.findOne({ id_usuario })) {
+      await this.usuarioSocialRepository.delete({ id_usuario });
+      await this.usuarioPerfilRepository.delete({ id_usuario });
+      await this.usuarioPontuacaoRepository.delete({ id_usuario });
+      await this.usuarioRepository.delete({ id_usuario });
+      //no futuro com o uso de mais tabelas será preciso conectar outros repositórios
+      return { deleted: true };
+    } else {
+      return { error: "Usuario não encontrado!" }
+    }
   }
 
   async toggleAtivoOuInativo(id_usuario: number) {

@@ -5,12 +5,12 @@ import { UsuarioService } from '../../service/usuario/usuario.service';
 export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) { }
 
-  @Post('cadastrarUsuario')
+  @Post('cadastrar')
   async cadastrarUsuario(@Body() data) {
     return this.usuarioService.cadastrarUsuario(data);
   }
 
-  @Get('listarTodos')
+  @Get('listar')
   async listar(): Promise<any[]> {
     return this.usuarioService.carregarTodosUsuarios();
   }
