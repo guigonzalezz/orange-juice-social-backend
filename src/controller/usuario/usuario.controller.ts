@@ -15,32 +15,32 @@ export class UsuarioController {
     return this.usuarioService.carregarTodosUsuarios();
   }
 
-  @Get('buscarUsuario')
+  @Get('buscar')
   async carregarInfoUsuario(@Query('id_usuario') id: number) {
     return this.usuarioService.carregarInfoUsuario(id);
   }
 
-  @Get('buscarUsuarioSocial')
+  @Get('buscarSocial')
   async carregarInfoUsuarioSocial(@Query('id_usuario') id: number) {
     return this.usuarioService.carregarInfoSocial(id);
   }
 
-  @Get('buscarUsuarioPerfil')
+  @Get('buscarPerfil')
   async carregarInfoUsuarioPerfill(@Query('id_usuario') id: number) {
     return this.usuarioService.carregarInfoPerfil(id);
   }
 
-  @Patch('toggleUsuario')
+  @Patch('toggleAtivoInativo')
   async toggleAtivarOuInativar(@Query('id_usuario') id: number) {
     return this.usuarioService.toggleAtivoOuInativo(id);
   }
 
-  @Patch('atualizarUsuario')
-  async atualizarUsuario(@Body() data) {
-    return this.usuarioService.atualizarUsuario(data.id, data);
+  @Patch('atualizarPerfil/:id')
+  async atualizarUsuarioPerfil(@Param('id') id: number, @Body() data) {
+    return this.usuarioService.atualizarUsuarioPerfil(id, data);
   }
 
-  @Delete('deletarUsuario')
+  @Delete('deletar')
   async deletarUsuario(@Query('id_usuario') id: number) {
     return this.usuarioService.deletarUsuario(id);
   }

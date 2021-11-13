@@ -21,13 +21,13 @@ export class UsuarioService {
     private usuarioPerfilRepository: Repository<any>,
     @Inject('USUARIO_SOCIAL_REPOSITORY')
     private usuarioSocialRepository: Repository<any>,
-    @Inject('USUARIO_SOCIAL_REPOSITORY')
+    @Inject('USUARIO_PONTUACAO_REPOSITORY')
     private usuarioPontuacaoRepository: Repository<any>,
     @Inject('CARGO_REPOSITORY')
     private cargoRepository: Repository<any>
   ) { }
 
-  async cadastrarUsuario(usuario: UsuarioCadastroDto) {//Promise<UsuarioRespostaDto> {
+  async cadastrarUsuario(usuario: UsuarioCadastroDto): Promise<UsuarioRespostaDto> {
     const usuario_general: Usuario = Usuario.create({
       ativo_SN: 'S',
       colaborador_SN: 'S',
@@ -65,11 +65,13 @@ export class UsuarioService {
     });
     await usuario_pontos.save();
 
+    let cargo = await this.cargoRepository.findOne(usuario.id_cargo);
     return {
-      general: usuario_general,
+      ...usuario_general,
+      cargo,
       perfil: usuario_perfil,
       social: usuario_social,
-      pontuacao: usuario_pontos
+      pontos: usuario_pontos
     };
     //if (usuarioSalvo) // envia email
     //https://notiz.dev/blog/send-emails-with-nestjs
@@ -79,26 +81,16 @@ export class UsuarioService {
   /**
    * @returns Array com todos usuários para o dashboard do admin
    */
-  async carregarTodosUsuarios(): Promise<UsuarioRespostaDto[]> {
-    let retorno = [];
-    let usuarios: UsuarioDto[] = await this.usuarioRepository.find();
+  async carregarTodosUsuarios() {
+    let usuarios = await this.usuarioRepository.find();
     await Promise.all(
       usuarios.map(async (item) => {
-        let usuario_pontos: UsuarioPontuacaoDto = await this.usuarioPontuacaoRepository.findOne(item.id_usuario);
-        let cargo: CargoDto = await this.cargoRepository.findOne(item.id_cargo);
-        let perfil: UsuarioPerfilDto = await this.usuarioPerfilRepository.findOne(item.id_usuario);
-        retorno.push({
-          id_usuario: item.id_usuario,
-          ativo_SN: item.ativo_SN,
-          colaborador_SN: item.colaborador_SN,
-          stamp_created: item.stamp_created,
-          cargo: cargo.nome,
-          pontos: usuario_pontos.pontos,
-          perfil,
-        })
+        item.cargo = await this.cargoRepository.findOne(item.id_cargo);
+        item.perfil = await this.usuarioPerfilRepository.findOne({ id_usuario: item.id_usuario });
+        item.pontos = await this.usuarioPontuacaoRepository.findOne({ id_usuario: item.id_usuario });
       })
     )
-    return retorno;
+    return usuarios;
   }
 
 
@@ -110,25 +102,21 @@ export class UsuarioService {
    * @returns Usuario e todas suas informações
    */
   async carregarInfoUsuario(id_usuario: number): Promise<UsuarioRespostaDto> {
-    let usuario: UsuarioDto = await this.usuarioRepository.findOne(id_usuario);
-    let social: UsuarioSocialDto = await this.usuarioSocialRepository.findOne(id_usuario);
-    let perfil: UsuarioPerfilDto = await this.usuarioPerfilRepository.findOne(id_usuario);
-    let usuario_pontos: UsuarioPontuacaoDto = await this.usuarioPontuacaoRepository.findOne(id_usuario);
-    let cargo: CargoDto = await this.cargoRepository.findOne(usuario.id_cargo);
+    const usuario: UsuarioDto = await this.usuarioRepository.findOne(id_usuario);
+    const usuario_pontos: UsuarioPontuacaoDto = await this.usuarioPontuacaoRepository.findOne({ id_usuario });
+    const cargo: CargoDto = await this.cargoRepository.findOne(usuario.id_cargo);
 
-    let retorno: UsuarioRespostaDto = {
+    return {
       id_usuario: usuario.id_usuario,
       ativo_SN: usuario.ativo_SN,
       colaborador_SN: usuario.colaborador_SN,
       stamp_created: usuario.stamp_created,
       cargo: cargo.nome,
       pontos: usuario_pontos.pontos,
-      social: social,
-      perfil: perfil,
+      social: await this.usuarioSocialRepository.findOne({ id_usuario }),
+      perfil: await this.usuarioPerfilRepository.findOne({ id_usuario }),
       feedback: null,
     }
-
-    return retorno;
   }
 
   async carregarInfoSocial(id_usuario: number): Promise<any> {
@@ -139,17 +127,22 @@ export class UsuarioService {
     return this.usuarioPerfilRepository.findOne(id_usuario);
   }
 
-  async atualizarUsuario(id_usuario: number, data: QueryDeepPartialEntity<UsuarioDto>): Promise<UsuarioDto> {
+  async atualizarUsuarioPerfil(id_usuario: number, data) {
     const element = await this.usuarioRepository.findOneOrFail(id_usuario);
     if (!element.id_usuario) {
       console.error('Usuario não existe!');
+      return { error: 'Usuario não existe!' };
     }
-    await this.usuarioRepository.update(id_usuario, data);
-    return await this.usuarioRepository.findOne({ id_usuario });
+    await this.usuarioPerfilRepository.update({ id_usuario }, data);
+    return await this.usuarioPerfilRepository.findOne({ id_usuario });
   }
 
   async deletarUsuario(id_usuario: number) {
+    await this.usuarioSocialRepository.delete({ id_usuario });
+    await this.usuarioPerfilRepository.delete({ id_usuario });
+    await this.usuarioPontuacaoRepository.delete({ id_usuario });
     await this.usuarioRepository.delete({ id_usuario });
+    //no futuro com o uso de mais tabelas será preciso conectar outros repositórios
     return { deleted: true };
   }
 
