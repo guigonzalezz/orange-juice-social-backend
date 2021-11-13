@@ -27,21 +27,34 @@ export class CargoService {
   }
 
   async findById(id_cargo: number) {
-    return await this.cargoRepository.findOne({ where: { id_cargo: id_cargo } });
+    return await this.cargoRepository.findOne(id_cargo)
   }
 
-  async atualizar(id_cargo: number, data: QueryDeepPartialEntity<CargoDto>): Promise<CargoDto> {
-    const element = await this.cargoRepository.findOneOrFail(id_cargo);
-    if (!element.id_cargo) {
-      console.error('Element não existe!');
-    }
+  async atualizar(id_cargo: number, data: QueryDeepPartialEntity<CargoDto>) {
+    if (!await this.cargoRepository.findOne(id_cargo)) return { error: 'Cargo não existe!' };
     await this.cargoRepository.update(id_cargo, data);
     return await this.cargoRepository.findOne({ id_cargo });
   }
 
   async deletar(id_cargo: number) {
-    await this.cargoRepository.delete({ id_cargo });
-    return { deleted: true };
+    if (!id_cargo) return { error: "Passe o parametro corretamente!" };
+
+    let res;
+    if (await this.cargoRepository.findOne({ id_cargo })) {
+      res = await this.cargoRepository.delete({ id_cargo });
+      switch (res.raw.affectedRows) {
+        case 1:
+          return { delete: true }
+        case 0:
+          return { delete: false }
+        default:
+          return { error: "Houve um erro ao realizar a deleção!" }
+
+      }
+    }
+    else {
+      return { error: "Não foi encontrado!" }
+    }
   }
 
 }
