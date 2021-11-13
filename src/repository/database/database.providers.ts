@@ -11,11 +11,11 @@ export const databaseProviders = [
     useFactory: async () =>
       await createConnection({
         type: 'mysql',
-        host: 'cis9cbtgerlk68wl.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
+        host: process.env.DB_HOST,
         port: 3306,
-        username: 'k0zhw26ohj06kuf4',
-        password: 'zqkftuhc320wd7qw',
-        database: 'onnzvvnbnuvwplfs',
+        username: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        database: process.env.DB_DATABASE,
         entities: [Usuario, UsuarioPerfil, UsuarioSocial, UsuarioPontuacao, Cargo],
         synchronize: true,
       }),
