@@ -1,5 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { UsuarioService } from '../../service/usuario/usuario.service';
+//import { Express } from 'express';
 
 @Controller('usuario')
 export class UsuarioController {
@@ -11,7 +13,7 @@ export class UsuarioController {
   }
 
   @Get('listar')
-  async listar(): Promise<any[]> {
+  async listar() {
     return this.usuarioService.carregarTodosUsuarios();
   }
 
@@ -44,4 +46,37 @@ export class UsuarioController {
   async deletarUsuario(@Query('id_usuario') id: number) {
     return this.usuarioService.deletarUsuario(id);
   }
+
+  @Post('avatar/adicionar/:id')
+  @UseInterceptors(FileInterceptor('file'))
+  async addAvatar(@Param('id') id: number, @UploadedFile() file) {
+    return this.usuarioService.addAvatar(file.buffer, id);
+  }
+
+  @Post('banner/adicionar/:id')
+  @UseInterceptors(FileInterceptor('file'))
+  async addBanner(@Param('id') id: number, @UploadedFile() file) {
+    return this.usuarioService.addBanner(file.buffer, id);
+  }
+
+  @Delete('avatar/deletar/:id')
+  async deletarAvatar(@Param('id') id: number) {
+    return this.usuarioService.deleteAvatar(id);
+  }
+
+  @Delete('banner/deletar/:id')
+  async deletarBanner(@Param('id') id: number) {
+    return this.usuarioService.deleteBanner(id);
+  }
+
+  @Get('avatar/buscar/:id')
+  async buscarAvatar(@Param('id') id: number) {
+    return this.usuarioService.getAvatar(id);
+  }
+
+  @Get('banner/buscar/:id')
+  async buscarBanner(@Param('id') id: number) {
+    return this.usuarioService.getBanner(id);
+  }
+
 }
