@@ -9,6 +9,7 @@ import { UsuarioDto } from './dto/usuario.dto';
 import { UsuarioCadastroDto } from './dto/usuario_cadastro.dto';
 import { UsuarioPontuacaoDto } from './dto/usuario_pontuacao.dto';
 import { S3 } from 'aws-sdk';
+import { ContentfulClientApi } from 'contentful'
 @Injectable()
 export class UsuarioService {
   constructor(
@@ -22,6 +23,8 @@ export class UsuarioService {
     private usuarioPontuacaoRepository: Repository<any>,
     @Inject('CARGO_REPOSITORY')
     private cargoRepository: Repository<any>,
+    @Inject('CONTENTFUL_CONNECTION')
+    private contentfulClient: ContentfulClientApi
   ) { }
 
   async cadastrarUsuario(usuario: UsuarioCadastroDto) {
