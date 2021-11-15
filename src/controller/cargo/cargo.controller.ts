@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Res } from '@nestjs/common';
 import { CargoService } from '../../service/cargo/cargo.service';
 
 @Controller('cargo')
@@ -7,32 +7,44 @@ export class CargoController {
 
 
   @Get('listar')
-  async listar(): Promise<any[]> {
-    return this.cargoService.carregarTodos();
+  async listar(@Res() response) {
+    const result = await this.cargoService.carregarTodos()
+    if (await (result).data) response.status(result.code).send(result)
+    return response.status(result.code).send(result)
   }
 
   @Post('cadastrar')
-  async cadastrar(@Body() data) {
-    return this.cargoService.criarCargo(data);
+  async cadastrar(@Body() data, @Res() response) {
+    const result = await this.cargoService.criarCargo(data)
+    if (await (result).data) response.status(result.code).send(result)
+    return response.status(result.code).send(result);
   }
 
   @Get('buscarId')
-  async carregarCargoPeloId(@Query('id_cargo') id: number) {
-    return this.cargoService.findById(id);
+  async carregarCargoPeloId(@Query('id_cargo') id: number, @Res() response) {
+    const result = await this.cargoService.findById(id)
+    if (await (result).data) response.status(result.code).send(result)
+    return response.status(result.code).send(result);
   }
 
   @Get('buscarNome')
-  async carregarCargoPeloNome(@Query('nome') nome: string) {
-    return this.cargoService.findByNome(nome);
+  async carregarCargoPeloNome(@Query('nome') nome: string, @Res() response) {
+    const result = await this.cargoService.findByNome(nome)
+    if (await (result).data) response.status(result.code).send(result)
+    return response.status(result.code).send(result)
   }
 
   @Patch('atualizar/:id')
-  async atualizarCargo(@Param('id') id: number, @Body() data) {
-    return this.cargoService.atualizar(id, data);
+  async atualizarCargo(@Param('id') id: number, @Body() data, @Res() response) {
+    const result = await this.cargoService.atualizar(id, data);
+    if (await (result).data) response.status(result.code).send(result)
+    return response.status(result.code).send(result)
   }
 
   @Delete('deletar')
-  async deletarcargo(@Query('id_cargo') id: number) {
-    return this.cargoService.deletar(id);
+  async deletarcargo(@Query('id_cargo') id: number, @Res() response) {
+    const result = await this.cargoService.deletar(id);
+    if (await (result).data) response.status(result.code).send(result)
+    return response.status(result.code).send(result)
   }
 }
