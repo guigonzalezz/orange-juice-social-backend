@@ -25,6 +25,8 @@ export class UsuarioService {
   ) { }
 
   async cadastrarUsuario(usuario: UsuarioCadastroDto) {
+    const existUsuario = await this.usuarioPerfilRepository.findOne({ cpf: usuario.cpf });
+    if (existUsuario) return { code: 409, error: 'Usuário já cadastrado!' }
     const usuario_general: Usuario = Usuario.create({
       ativo_SN: 'S',
       colaborador_SN: 'S',
@@ -83,6 +85,7 @@ export class UsuarioService {
    */
   async carregarTodosUsuarios() {
     let usuarios = await this.usuarioRepository.find();
+    if (!usuarios) return { code: 204, data: "Não foi encontrado registros!" }
     await Promise.all(
       usuarios.map(async (item) => {
         item.cargo = await this.cargoRepository.findOne(item.id_cargo);
@@ -268,12 +271,15 @@ export class UsuarioService {
       ACL: "public-read",
       Expires: 120
     };
-    return new Promise((resolve, reject) => {
-      s3.getSignedUrl("putObject", params, function (err, url) {
-        if (err) return reject(err);
-        resolve(url);
-      });
-    });
+    return {
+      code: 200,
+      data: new Promise((resolve, reject) => {
+        s3.getSignedUrl("putObject", params, function (err, url) {
+          if (err) return reject(err);
+          resolve(url);
+        });
+      })
+    }
   }
 
   async getBanner(id_usuario: number) {
@@ -287,12 +293,15 @@ export class UsuarioService {
       ACL: "public-read",
       Expires: 120
     };
-    return new Promise((resolve, reject) => {
-      s3.getSignedUrl("putObject", params, function (err, url) {
-        if (err) return reject(err);
-        resolve(url);
-      });
-    });
+    return {
+      code: 200,
+      data: new Promise((resolve, reject) => {
+        s3.getSignedUrl("putObject", params, function (err, url) {
+          if (err) return reject(err);
+          resolve(url);
+        });
+      })
+    }
   }
 
 }
