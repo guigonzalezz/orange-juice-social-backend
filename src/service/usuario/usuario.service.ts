@@ -180,11 +180,12 @@ export class UsuarioService {
     const usuario = await this.usuarioRepository.findOne(id_usuario);
     if (!usuario) return { code: 404, error: "Usuario não encontrado!" };
 
-    const path = `usuarios/avatar/${id_usuario}/avatar.jpg`;
+    const path = `usuarios/avatar/${id_usuario}/avatar.jpeg`;
     const s3 = new S3();
-    const uploadResult = await s3.upload({
+    await s3.upload({
       Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
       Body: dataBuffer,
+      ContentType: 'image/jpeg',
       Key: path
     }).promise();
 
@@ -195,18 +196,20 @@ export class UsuarioService {
       .where("id_usuario = :id", { id: id_usuario })
       .execute();
 
-    return { code: 201, data: uploadResult.Location };
+    return { code: 201, data: await this.getAvatar(id_usuario) };
   }
 
   async addBanner(dataBuffer: Buffer, id_usuario: number) {
     const usuario = await this.usuarioRepository.findOne(id_usuario);
     if (!usuario) return { code: 404, error: "Usuario não encontrado!" };
 
-    const path = `usuarios/banner/${id_usuario}/banner.jpg`;
+    const path = `usuarios/banner/${id_usuario}/banner.jpeg`;
     const s3 = new S3();
-    const uploadResult = await s3.upload({
+    await s3.upload({
       Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
       Body: dataBuffer,
+      ContentType: 'image/jpeg',
+      ACL: 'public-read',
       Key: path
     }).promise();
 
@@ -217,7 +220,7 @@ export class UsuarioService {
       .where("id_usuario = :id", { id: id_usuario })
       .execute();
 
-    return { code: 201, data: uploadResult.Location };
+    return { code: 201, data: await this.getBanner(id_usuario) };
   }
 
   async deleteAvatar(id_usuario: number) {
@@ -261,46 +264,36 @@ export class UsuarioService {
   }
 
   async getAvatar(id_usuario: number) {
-    const usuario = await this.usuarioSocialRepository.findOne(id_usuario);
+    const usuario = await this.usuarioSocialRepository.findOne({ id_usuario });
     if (!usuario) return { code: 404, error: "Usuario não encontrado!" };
 
     const s3 = new S3();
-    const params = {
+    var params = {
       Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
       Key: usuario.avatar,
-      ACL: "public-read",
-      Expires: 120
+      Expires: 86400 // 24hrs
     };
+
     return {
       code: 200,
-      data: new Promise((resolve, reject) => {
-        s3.getSignedUrl("putObject", params, function (err, url) {
-          if (err) return reject(err);
-          resolve(url);
-        });
-      })
+      data: s3.getSignedUrl('getObject', params)
     }
   }
 
   async getBanner(id_usuario: number) {
-    const usuario = await this.usuarioSocialRepository.findOne(id_usuario);
+    const usuario = await this.usuarioSocialRepository.findOne({ id_usuario });
     if (!usuario) return { code: 404, error: "Usuario não encontrado!" };
 
     const s3 = new S3();
-    const params = {
+    var params = {
       Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
       Key: usuario.banner,
-      ACL: "public-read",
-      Expires: 120
+      Expires: 86400 // 24hrs
     };
+
     return {
       code: 200,
-      data: new Promise((resolve, reject) => {
-        s3.getSignedUrl("putObject", params, function (err, url) {
-          if (err) return reject(err);
-          resolve(url);
-        });
-      })
+      data: s3.getSignedUrl('getObject', params)
     }
   }
 
