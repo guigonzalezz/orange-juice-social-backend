@@ -1,5 +1,6 @@
 import { createConnection } from 'typeorm';
 import { Cargo } from './cargo/entidades/cargo.entity';
+import { SessionToken } from './session-token/entidades/session-token.entity';
 import { Usuario } from './usuario/entidades/usuario.entity';
 import { UsuarioPerfil } from './usuario/entidades/usuario_perfil.entity';
 import { UsuarioPontuacao } from './usuario/entidades/usuario_pontuacao.entity';
@@ -16,7 +17,7 @@ export const databaseProviders = [
         username: process.env.DB_USER,
         password: process.env.DB_PASS,
         database: process.env.DB_DATABASE,
-        entities: [Usuario, UsuarioPerfil, UsuarioSocial, UsuarioPontuacao, Cargo],
+        entities: [Usuario, UsuarioPerfil, UsuarioSocial, UsuarioPontuacao, Cargo, SessionToken],
         synchronize: true,
       }),
   },

@@ -35,7 +35,7 @@ export class UsuarioService {
   }
 
   async cadastrarUsuario(usuario: UsuarioCadastroDto) {
-    const existUsuario = await this.usuarioPerfilRepository.findOne({ cpf: usuario.cpf });
+    const existUsuario = await this.usuarioPerfilRepository.findOne({ where: [{ cpf: usuario.cpf }, {email_empresarial: usuario.email_empresarial}]});
     if (existUsuario) return { code: 409, error: 'Usuário já cadastrado!' }
     const usuario_general: Usuario = Usuario.create({
       ativo_SN: 'S',
