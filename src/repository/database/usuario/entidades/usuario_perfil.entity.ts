@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, BaseEntity, OneToOne, JoinColumn } from 'typeorm';
-import * as crypto from 'crypto';
+import * as bcrypt from 'bcrypt';
 import { Usuario } from './usuario.entity';
 
 @Entity()
@@ -25,8 +25,9 @@ export class UsuarioPerfil extends BaseEntity {
   contato: string;
 
   @BeforeInsert()
-  hashPassword() {
-    this.senha = crypto.createHmac('sha256', this.senha).digest('hex');
+  async hashPassword() {
+    const salt = await bcrypt.genSalt();
+    this.senha = await bcrypt.hash(this.senha, salt);
   }
 
   @Column({ length: 100 })

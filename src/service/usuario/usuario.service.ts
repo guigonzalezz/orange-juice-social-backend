@@ -10,6 +10,8 @@ import { UsuarioCadastroDto } from './dto/usuario_cadastro.dto';
 import { UsuarioPontuacaoDto } from './dto/usuario_pontuacao.dto';
 import { S3 } from 'aws-sdk';
 import { ContentfulClientApi } from 'contentful'
+import * as crypto from 'crypto';
+import { CargoService } from '../cargo/cargo.service';
 @Injectable()
 export class UsuarioService {
   constructor(
@@ -21,11 +23,16 @@ export class UsuarioService {
     private usuarioSocialRepository: Repository<any>,
     @Inject('USUARIO_PONTUACAO_REPOSITORY')
     private usuarioPontuacaoRepository: Repository<any>,
-    @Inject('CARGO_REPOSITORY')
-    private cargoRepository: Repository<any>,
     @Inject('CONTENTFUL_CONNECTION')
-    private contentfulClient: ContentfulClientApi
+    private contentfulClient: ContentfulClientApi,
+    private cargoService: CargoService,
   ) { }
+
+  async buscarUsuarioPorEmail(email_empresarial: string) {
+    const usuario = await this.usuarioPerfilRepository.findOne({ email_empresarial });
+    if (!usuario) return { code: 404, error: "Usuario não encontrado!" };
+    return { code: 200, data: usuario }
+  }
 
   async cadastrarUsuario(usuario: UsuarioCadastroDto) {
     const existUsuario = await this.usuarioPerfilRepository.findOne({ cpf: usuario.cpf });
@@ -67,7 +74,7 @@ export class UsuarioService {
     });
     await usuario_pontos.save();
 
-    let cargo = await this.cargoRepository.findOne(usuario.id_cargo);
+    let cargo = (await this.cargoService.findById(usuario.id_cargo)).data;
     return {
       code: 201,
       data: {
@@ -91,7 +98,7 @@ export class UsuarioService {
     if (!usuarios) return { code: 204, data: "Não foi encontrado registros!" }
     await Promise.all(
       usuarios.map(async (item) => {
-        item.cargo = await this.cargoRepository.findOne(item.id_cargo);
+        item.cargo = (await this.cargoService.findById(item.id_cargo)).data;
         item.perfil = await this.usuarioPerfilRepository.findOne({ id_usuario: item.id_usuario });
         item.pontos = await this.usuarioPontuacaoRepository.findOne({ id_usuario: item.id_usuario });
       })
@@ -101,7 +108,6 @@ export class UsuarioService {
       data: usuarios
     };
   }
-
 
   /**
    * Fazer:
@@ -115,7 +121,7 @@ export class UsuarioService {
     if (!usuario) return { code: 404, error: "Usuario não encontrado!" };
 
     const usuario_pontos: UsuarioPontuacaoDto = await this.usuarioPontuacaoRepository.findOne({ id_usuario });
-    const cargo: CargoDto = await this.cargoRepository.findOne(usuario.id_cargo);
+    const cargo: CargoDto = (await this.cargoService.findById(usuario.id_cargo)).data;
 
     return {
       code: 200,

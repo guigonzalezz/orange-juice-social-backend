@@ -11,5 +11,6 @@ import { CargoService } from '../../service/cargo/cargo.service';
     ...cargoProviders,
     CargoService,
   ],
+  exports: [CargoService],
 })
 export class CargoModule { }
