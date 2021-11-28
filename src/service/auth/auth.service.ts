@@ -13,19 +13,21 @@ export class AuthService {
   ) { }
 
   async validarUsuario(email: string, senha: string): Promise<any> {
-    const usuario = (await this.usuarioService.buscarUsuarioPorEmail(email)).data;
-    if(usuario == 'Usuario não encontrado!') return null
-    if (usuario  && bcrypt.compareSync(senha, usuario.senha)) {
-      const { senha, ...result } = usuario;
+    const usuario = await this.usuarioService.buscarUsuarioPorEmail(email);
+    if(usuario.error) return usuario
+    if (usuario.data  && bcrypt.compareSync(senha, usuario.data.perfil.senha)) {
+      const { senha, ...result } = usuario.data;
       return result;
+    }else {
+      return 'Senha incorreta!';
     }
-    return null;
   }
 
   async login(usuario: any) {
-    const payload = { username: usuario.email_empresarial, sub: usuario.id_usuario };
+    if(usuario.error) return { code: usuario.code, error: usuario.error }
+    const payload = { username: usuario.perfil.email_empresarial, sub: usuario.id_usuario, cargo: usuario.cargo };
     const token = this.jwtService.sign(payload);
-    await this.sessionTokenService.save(token, usuario.email_empresarial);
+    await this.sessionTokenService.save(token, usuario.perfil.email_empresarial);
     return {
       code: 200,
       data: token

@@ -12,6 +12,14 @@ async function bootstrap() {
   //app.useGlobalInterceptors(new ExcludeNullInterceptor());
   //app.use(cookieParser());
 
+  const cors = require('cors');
+  const corsOptions = {
+    origin: "*",
+    credentials: true,
+    optionSuccessStatus:200
+  }
+  app.use(cors(corsOptions));
+
   config.update({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,

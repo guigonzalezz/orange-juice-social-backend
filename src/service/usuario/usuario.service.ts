@@ -29,8 +29,9 @@ export class UsuarioService {
   ) { }
 
   async buscarUsuarioPorEmail(email_empresarial: string) {
-    const usuario = await this.usuarioPerfilRepository.findOne({ email_empresarial });
+    let usuario = await this.usuarioPerfilRepository.findOne({ email_empresarial });
     if (!usuario) return { code: 404, error: "Usuario não encontrado!" };
+    usuario = (await this.carregarInfoUsuario(usuario.id_usuario)).data
     return { code: 200, data: usuario }
   }
 
