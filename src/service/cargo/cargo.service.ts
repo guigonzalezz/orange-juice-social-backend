@@ -11,7 +11,7 @@ export class CargoService {
   ) { }
 
   async carregarTodos() {
-    const cargos = this.cargoRepository.find();
+    const cargos = await this.cargoRepository.find();
     if (!cargos) return { code: 204, error: "Não foi encontrado registros!" }
     return {
       code: 200,

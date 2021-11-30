@@ -134,20 +134,20 @@ export class UsuarioService {
         cargo: cargo.nome,
         pontos: usuario_pontos.pontos,
         social: await this.usuarioSocialRepository.findOne({ id_usuario }),
-        perfil: await this.usuarioPerfilRepository.findOne({ id_usuario }),
+        perfil: await this.usuarioPerfilRepository.findOne({select: ["id_usuario_perfil", "nome", "email", "email_empresarial", "senha", "data_nasc", "contato", "cpf", "cidade", "estado", "pais", "id_usuario"], where:{ id_usuario }}),
         feedback: null,
       }
     }
   }
 
   async carregarInfoSocial(id_usuario: number) {
-    const usuario = this.usuarioSocialRepository.findOne(id_usuario);
+    const usuario = await this.usuarioSocialRepository.findOne(id_usuario);
     if (!usuario) return { code: 404, error: "Usuario não encontrado!" };
     return { code: 200, data: usuario }
   }
 
   async carregarInfoPerfil(id_usuario: number) {
-    const usuario = this.usuarioPerfilRepository.findOne(id_usuario);
+    const usuario = await this.usuarioPerfilRepository.findOne(id_usuario);
     if (!usuario) return { code: 404, error: "Usuario não encontrado!" };
     return { code: 200, data: usuario }
   }

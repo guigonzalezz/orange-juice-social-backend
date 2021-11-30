@@ -30,7 +30,7 @@ export class UsuarioPerfil extends BaseEntity {
     this.senha = await bcrypt.hash(this.senha, salt);
   }
 
-  @Column({ length: 100 })
+  @Column({ length: 100, select: false})
   senha: string;
 
   @Column({ length: 11 })
