@@ -171,7 +171,7 @@ export class UsuarioService {
       return { code: 404, error: "Usuario não encontrado!" }
     }
   }
-
+  
   async toggleAtivoOuInativo(id_usuario: number) {
     const usuario = await this.usuarioRepository.findOne(id_usuario);
     if (!usuario) return { code: 500, error: "Usuario não encontrado!" };
