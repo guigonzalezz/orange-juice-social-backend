@@ -1,4 +1,4 @@
-import { createClient } from 'contentful'
+import { createClient, ContentfulClientApi } from 'contentful'
 
 export const contentfulProviders = [
   {
@@ -8,6 +8,6 @@ export const contentfulProviders = [
         space: process.env.CONTENTFUL_SPACE_ID,
         accessToken: process.env.CONTENTFUL_DELIVERY_ACCESS_TOKEN,
         environment: process.env.CONTENTFUL_ENVIRONMENT
-      }),
+      }) as ContentfulClientApi,
   },
 ];
