@@ -12,10 +12,48 @@ export class ContentfulService {
 
   ) { }
 
-  async primeiroTesteIntegracao() {
+  async retornaNomeProjetoContentful() {
     return {
       code: 200,
-      data: (await this.contentfulClient.getSpace()).locales
+      data: (await this.contentfulClient.getSpace()).name
+    }
+  }
+
+  async retornaQuizzes() {
+    return {
+      code: 200,
+      data: await this.contentfulClient.getEntries({ content_type: 'quiz'})
+    }
+  }
+
+  async retornaTrilhas() {
+    return {
+      code: 200,
+      data: await this.contentfulClient.getEntries({ content_type: 'trilha'})
+    }
+  }
+  async retornaEventos() {
+    return {
+      code: 200,
+      data: await this.contentfulClient.getEntries({ content_type: 'evento'})
+    }
+  }
+  async retornaBlogs() {
+    return {
+      code: 200,
+      data: await this.contentfulClient.getEntries({ content_type: 'blog'})
+    }
+  }
+  async retornaNoticias() {
+    return {
+      code: 200,
+      data: await this.contentfulClient.getEntries({ content_type: 'noticia'})
+    }
+  }
+  async retornaDesafios() {
+    return {
+      code: 200,
+      data: await this.contentfulClient.getEntries({ content_type: 'desafio'})
     }
   }
 
