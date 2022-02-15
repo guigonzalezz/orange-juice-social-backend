@@ -158,6 +158,12 @@ export class UsuarioService {
     return { code: 200, data: await this.usuarioPerfilRepository.findOne({ id_usuario }) };
   }
 
+  async atualizarUsuarioSocial(id_usuario: number, data) {
+    if (!await this.usuarioSocialRepository.findOne(id_usuario)) return { code: 404, error: 'Usuario não existe!' };
+    await this.usuarioSocialRepository.update({ id_usuario }, data);
+    return { code: 200, data: await this.usuarioSocialRepository.findOne({ id_usuario }) };
+  }
+
   async deletarUsuario(id_usuario: number) {
     if (!id_usuario) return { code: 500, error: "Passe o parametro corretamente!" };
     if (await this.usuarioRepository.findOne({ id_usuario })) {

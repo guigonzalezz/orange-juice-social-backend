@@ -56,6 +56,13 @@ export class UsuarioController {
     else return response.status(result.code).send(result)
   }
 
+  @Patch('atualizarSocial/:id')
+  async atualizarUsuarioSocial(@Param('id') id: number, @Body() data, @Res() response) {
+    const result = await this.usuarioService.atualizarUsuarioSocial(id, data);
+    if (await (result).data) response.status(result.code).send(result)
+    else return response.status(result.code).send(result)
+  }
+
   @Delete('deletar')
   async deletarUsuario(@Query('id_usuario') id: number, @Res() response) {
     const result = await this.usuarioService.deletarUsuario(id);
