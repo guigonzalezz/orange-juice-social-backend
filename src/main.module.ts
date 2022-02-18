@@ -9,7 +9,7 @@ import { SessionTokenModule } from './controller/session-token/session-token.mod
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    AuthModule,
+    AuthModule
   ],
   controllers: [],
   providers: [],
