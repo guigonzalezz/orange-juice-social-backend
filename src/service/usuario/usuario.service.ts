@@ -91,9 +91,6 @@ export class UsuarioService {
 
   }
 
-  /**
-   * @returns Array com todos usuários para o dashboard do admin
-   */
   async carregarTodosUsuarios() {
     let usuarios = await this.usuarioRepository.find();
     if (!usuarios) return { code: 204, data: "Não foi encontrado registros!" }
@@ -110,13 +107,6 @@ export class UsuarioService {
     };
   }
 
-  /**
-   * Fazer:
-   * - criar função que traz feedbacks e utilizar
-   *
-   * @param id_usuario
-   * @returns Usuario e todas suas informações
-   */
   async carregarInfoUsuario(id_usuario: number) {
     const usuario: UsuarioDto = await this.usuarioRepository.findOne(id_usuario);
     if (!usuario) return { code: 404, error: "Usuario não encontrado!" };
