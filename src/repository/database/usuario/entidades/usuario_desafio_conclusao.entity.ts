@@ -1,6 +1,9 @@
-import { Entity, Column, BaseEntity } from 'typeorm';
+import { Entity, Column, BaseEntity, PrimaryGeneratedColumn } from 'typeorm';
 @Entity("usuario_desafio_conclusao")
 export class UsuarioDesafioConclusao extends BaseEntity {
+  @PrimaryGeneratedColumn()
+  id_usuario_desafio_conclusao: number;
+
   @Column()
   id_usuario: number;
 

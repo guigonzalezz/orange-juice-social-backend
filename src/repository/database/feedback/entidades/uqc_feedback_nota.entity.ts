@@ -1,7 +1,9 @@
-import { Entity, Column, BaseEntity } from 'typeorm';
+import { Entity, Column, BaseEntity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity("uqc_feedback_nota")
 export class UqcFeedbackNota extends BaseEntity {
+  @PrimaryGeneratedColumn()
+  id_uqc: number;
 
   @Column()
   stamp_created: Date; 
