@@ -1,6 +1,6 @@
 import { Entity, Column, BaseEntity } from 'typeorm';
 
-@Entity()
+@Entity("log_plataforma")
 export class LogPlataforma extends BaseEntity {
   
   @Column()

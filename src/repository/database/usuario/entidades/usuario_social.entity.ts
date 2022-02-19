@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, OneToOne, JoinColumn } from 'typeorm';
 import { Usuario } from './usuario.entity';
 
-@Entity()
+@Entity("usuario_social")
 export class UsuarioSocial extends BaseEntity {
 
   @PrimaryGeneratedColumn()

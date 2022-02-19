@@ -1,6 +1,6 @@
 import { Entity, Column, BaseEntity } from 'typeorm';
 
-@Entity()
+@Entity("udc_feedback_nota")
 export class UdcFeedbackNota extends BaseEntity {
 
   @Column()

@@ -1,5 +1,5 @@
 import { Entity, Column, BaseEntity } from 'typeorm';
-@Entity()
+@Entity("usuario_trilha_conclusao")
 export class UsuarioTrilhaConclusao extends BaseEntity {
   @Column()
   id_usuario: number;

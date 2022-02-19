@@ -1,22 +1,15 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from 'typeorm';
-@Entity()
-export class Usuario extends BaseEntity {
-  @PrimaryGeneratedColumn()
+import { Entity, Column, BaseEntity } from 'typeorm';
+@Entity("usuario_curso_conclusao")
+export class UsuarioCursoConclusao extends BaseEntity {
+  @Column()
   id_usuario: number;
 
   @Column()
-  id_cargo: number;
+  id_curso: number;
 
   @Column({ length: 1 })
-  ativo_SN: string;
-
-  @Column({ length: 1 })
-  colaborador_SN: string;
-
+  concluido_SN: string;
+  
   @Column()
-  stamp_created: Date;
-
-  @Column({ nullable: true })
-  stamp_disable: Date;
-
+  anotacao: string;
 }

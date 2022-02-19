@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, BaseEntity, OneTo
 import * as bcrypt from 'bcrypt';
 import { Usuario } from './usuario.entity';
 
-@Entity()
+@Entity("usuario_perfil")
 export class UsuarioPerfil extends BaseEntity {
 
   @PrimaryGeneratedColumn()
