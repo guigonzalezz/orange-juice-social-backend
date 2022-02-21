@@ -1,124 +1,39 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { ContentfulClientApi } from 'contentful' 
-import { DeepPartial, Repository } from 'typeorm';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
-
+import { Injectable } from '@nestjs/common';
+import { ContentfulRepository } from 'src/repository/contentful/contentful.repository';
+import { BaseServiceGeneric, BasicResponseInterface } from '../service.generic';
 
 @Injectable()
-export class ContentfulService {
+export class ContentfulService extends BaseServiceGeneric {
   constructor(
-    @Inject('CONTENTFUL_CONNECTION')
-    private contentfulClient: ContentfulClientApi,
-
-  ) { }
-
-  async retornaNomeProjetoContentful() {
-    return {
-      code: 200,
-      data: (await this.contentfulClient.getSpace()).name
-    }
+    private readonly contentfulRepository: ContentfulRepository
+  ) { super() }
+    
+  async retornaNomeProjetoContentful(): Promise<BasicResponseInterface> {
+    return this.createReturn(200, await this.contentfulRepository.retornaNomeProjetoContentful())
   }
 
-  async retornaQuizzes() {
-    let contentfulRes: any = (await this.contentfulClient.getEntries({ content_type: 'quiz'})).items
-    contentfulRes = contentfulRes.map(item => ({
-      titulo: item.fields.titulo,
-      descricao: item.fields.descricao,
-      cargo: item.fields.cargo,
-      tempo: item.fields.tempo,
-      questoes: item.fields.questoes.map(questao => ({
-        pergunta: questao.pergunta,
-        respostas: questao.respostas.map(resposta => ({
-          resposta: resposta.resposta,
-          correta: resposta.correta
-        }))
-      }))
-    })) 
-    
-    return {
-      code: 200,
-      data: contentfulRes
-    }
+  async retornaQuizzes(): Promise<BasicResponseInterface> {
+    return this.createReturn(200, await this.contentfulRepository.retornaQuizzes())
   }
 
-  async retornaTrilhas() {
-    let contentfulRes: any = (await this.contentfulClient.getEntries({ content_type: 'trilha'})).items
-    contentfulRes = contentfulRes.map(item => ({
-      titulo: item.fields.titulo,
-      descricao: item.fields.descricao,
-      cargo: item.fields.cargo,
-      cursos: item.fields.cursos.map(curso => ({
-        titulo: curso.fields.titulo,
-        descricao: curso.fields.descricao,
-        pontos: curso.fields.pontos,
-        link: curso.fields.link
-      }))
-    })) 
-    
-    return {
-      code: 200,
-      data: contentfulRes
-    }
+  async retornaTrilhas(): Promise<BasicResponseInterface> {
+    return this.createReturn(200, await this.contentfulRepository.retornaTrilhas())
   }
-  async retornaEventos() {
-    let contentfulRes: any = (await this.contentfulClient.getEntries({ content_type: 'evento'})).items
-    contentfulRes = contentfulRes.map(item => ({
-      titulo: item.fields.titulo,
-      descricao: item.fields.descricao,
-      data: item.fields.data
-    })) 
-    
-    return {
-      code: 200,
-      data: contentfulRes
-    }
+  
+  async retornaEventos(): Promise<BasicResponseInterface> {
+    return this.createReturn(200, await this.contentfulRepository.retornaEventos())
   }
-  async retornaBlogs() {
-    let contentfulRes: any = (await this.contentfulClient.getEntries({ content_type: 'blog'})).items
-    contentfulRes = contentfulRes.map(item => ({
-      titulo: item.fields.titulo,
-      link: item.fields.link,
-      imagem: item.fields.imagem.fields.file.url,
-      descricao: item.fields.descricao,
-      autor: item.fields.autor,
-      stampCreated: item.fields.stampCreated
-    })) 
-    
-    return {
-      code: 200,
-      data: contentfulRes
-    }
+
+  async retornaBlogs(): Promise<BasicResponseInterface> {
+    return this.createReturn(200, await this.contentfulRepository.retornaBlogs())
   }
-  async retornaNoticias() {
-    let contentfulRes: any = (await this.contentfulClient.getEntries({ content_type: 'noticias'})).items
-    contentfulRes = contentfulRes.map(item => ({
-      titulo: item.fields.titulo,
-      descricao: item.fields.descricao,
-      imagem: item.fields.imagem.fields.file.url,
-      link: item.fields.link,
-      stampCreated: item.fields.stampCreated,
-      stampAt: item.fields.stampAt
-    })) 
-    
-    return {
-      code: 200,
-      data: contentfulRes
-    }
+
+  async retornaNoticias(): Promise<BasicResponseInterface> {
+    return this.createReturn(200, await this.contentfulRepository.retornaNoticias())
   }
-  async retornaDesafios() {
-    let contentfulRes: any = (await this.contentfulClient.getEntries({ content_type: 'desafio'})).items
-    contentfulRes = contentfulRes.map(item => ({
-      titulo: item.fields.titulo,
-      descricao: item.fields.descricao.content,
-      ordem: item.fields.ordem,
-      pontos: item.fields.pontos,
-      cargo: item.fields.cargo,
-      imagem: item.fields.imagem.fields.file.url
-    }))
-    return {
-      code: 200,
-      data: contentfulRes
-    }
+
+  async retornaDesafios(): Promise<BasicResponseInterface> {
+    return this.createReturn(200, await this.contentfulRepository.retornaDesafios())
   }
 
 }

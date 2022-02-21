@@ -1,78 +1,49 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { DeepPartial, Repository } from 'typeorm';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
-import { CargoDto } from './dto/cargo.dto';
+import { Injectable } from '@nestjs/common';
+import { CargoRepository } from 'src/repository/database/cargo/cargo.repository';
+import { BaseServiceGeneric, BasicResponseInterface } from '../service.generic';
 
 @Injectable()
-export class CargoService {
+export class CargoService extends BaseServiceGeneric{
   constructor(
-    @Inject('CARGO_REPOSITORY')
-    private cargoRepository: Repository<any>,
-  ) { }
+    private cargoRepository: CargoRepository,
+  ) { super() }
 
-  async carregarTodos() {
-    const cargos = await this.cargoRepository.find();
-    if (!cargos) return { code: 204, error: "Não foi encontrado registros!" }
-    return {
-      code: 200,
-      data: cargos
-    }
+  async carregarTodos(): Promise<BasicResponseInterface>  {
+    let cargos: any = await this.cargoRepository.buscaTodosCargos();
+    if (!cargos) return this.createReturn(204, "Não foi encontrado registros!")
+    return this.createReturn(200, cargos)
   }
 
-  async criarCargo(cargo: DeepPartial<CargoDto>) {
-    const existCargo = await this.cargoRepository.findOne({ nome: cargo.nome })
-    if (existCargo) return { code: 409, error: "Cargo já foi cadastrado" }
+  async criarCargo(cargo): Promise<BasicResponseInterface> {
+    const existCargo = await this.cargoRepository.buscaCargoPeloNome(cargo.nome)
+    if (existCargo) return this.createReturn(409, "Cargo já foi cadastrado")
 
-    return {
-      code: 201,
-      data: await this.cargoRepository.save(cargo)
-    };
+    return this.createReturn(201, await this.cargoRepository.cadastrarCargo(cargo))
   }
 
-  async findByNome(nome: string) {
-    const cargo = await this.cargoRepository.findOne({
-      where: {
-        nome: nome,
-      },
-    })
-    if (!cargo) return { code: 404, error: "Cargo não encontrado!" }
-    return { code: 200, data: cargo };
+  async findByNome(nome: string): Promise<BasicResponseInterface> {
+    const cargo = await this.cargoRepository.buscaCargoPeloNome(nome)
+    if (!cargo) return this.createReturn(404,"Cargo não encontrado!")
+    return this.createReturn(200, cargo)
   }
 
-  async findById(id_cargo: number) {
-    const cargo = await this.cargoRepository.findOne(id_cargo)
-    if (!cargo) return { code: 404, error: "Cargo não encontrado!" }
-    return { code: 200, data: cargo };
+  async findById(id_cargo: number): Promise<BasicResponseInterface> {
+    const cargo = await this.cargoRepository.buscaCargoPeloId(id_cargo)
+    if (!cargo) return this.createReturn(404,"Cargo não encontrado!")
+    return this.createReturn(200, cargo)
   }
 
-  async atualizar(id_cargo: number, data: QueryDeepPartialEntity<CargoDto>) {
-    if (!await this.cargoRepository.findOne(id_cargo)) return { code: 404, error: 'Cargo não encontrado!' };
-    await this.cargoRepository.update(id_cargo, data);
-    return {
-      code: 200,
-      data: await this.cargoRepository.findOne({ id_cargo })
-    }
+  async atualizar(id_cargo: number, data): Promise<BasicResponseInterface> {
+    const cargo = await this.cargoRepository.buscaCargoPeloId(id_cargo)
+    if (!cargo) return this.createReturn(404,"Cargo não encontrado!")
+    return this.createReturn(200, await this.cargoRepository.atualizar(id_cargo, data))
   }
 
-  async deletar(id_cargo: number) {
-    if (!id_cargo) return { code: 422, error: "Passe o parametro corretamente!" };
-
-    let res;
-    if (await this.cargoRepository.findOne({ id_cargo })) {
-      res = await this.cargoRepository.delete({ id_cargo });
-      switch (res.raw.affectedRows) {
-        case 1:
-          return { code: 200, data: true }
-        case 0:
-          return { code: 204, error: false }
-        default:
-          return { code: 500, error: "Houve um erro ao realizar a deleção!" }
-
-      }
-    }
-    else {
-      return { code: 404, error: "Cargo não foi encontrado!" }
-    }
+  async deletar(id_cargo: number): Promise<BasicResponseInterface> {
+    if (!id_cargo) return this.createReturn(422,"Passe o parametro corretamente!")
+    const cargo = await this.cargoRepository.buscaCargoPeloId(id_cargo)
+    if (!cargo) return this.createReturn(404,"Cargo não encontrado!")
+    return this.createReturn(200, await this.cargoRepository.deletar(id_cargo))
   }
 
 }

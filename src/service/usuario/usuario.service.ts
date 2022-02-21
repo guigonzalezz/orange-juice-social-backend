@@ -1,190 +1,105 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { Usuario } from 'src/repository/database/usuario/entidades/usuario.entity';
-import { UsuarioPerfil } from 'src/repository/database/usuario/entidades/usuario_perfil.entity';
-import { UsuarioPontuacao } from 'src/repository/database/usuario/entidades/usuario_pontuacao.entity';
-import { UsuarioSocial } from 'src/repository/database/usuario/entidades/usuario_social.entity';
-import { Repository, getConnection } from 'typeorm';
-import { CargoDto } from '../cargo/dto/cargo.dto';
-import { UsuarioDto } from './dto/usuario.dto';
-import { UsuarioCadastroDto } from './dto/usuario_cadastro.dto';
-import { UsuarioPontuacaoDto } from './dto/usuario_pontuacao.dto';
-import { S3 } from 'aws-sdk';
-import { ContentfulClientApi } from 'contentful'
-import * as crypto from 'crypto';
-import { CargoService } from '../cargo/cargo.service';
+import { Injectable } from '@nestjs/common'
+import { CargoInterface } from '../cargo/interface/cargo.interface'
+import { UsuarioInterface } from './interface/usuario.interface'
+import { UsuarioCadastroInterface } from './interface/usuario_cadastro.interface'
+import { UsuarioPontuacaoInterface } from './interface/usuario_pontuacao.interface'
+import { S3 } from 'aws-sdk'
+import { UsuarioRepository } from 'src/repository/database/usuario/usuario.repository'
+import { BaseServiceGeneric, BasicResponseInterface } from '../service.generic'
+import { CargoRepository } from 'src/repository/database/cargo/cargo.repository'
 @Injectable()
-export class UsuarioService {
+export class UsuarioService extends BaseServiceGeneric {
   constructor(
-    @Inject('USUARIO_REPOSITORY')
-    private usuarioRepository: Repository<any>,
-    @Inject('USUARIO_PERFIL_REPOSITORY')
-    private usuarioPerfilRepository: Repository<any>,
-    @Inject('USUARIO_SOCIAL_REPOSITORY')
-    private usuarioSocialRepository: Repository<any>,
-    @Inject('USUARIO_PONTUACAO_REPOSITORY')
-    private usuarioPontuacaoRepository: Repository<any>,
-    @Inject('CONTENTFUL_CONNECTION')
-    private contentfulClient: ContentfulClientApi,
-    private cargoService: CargoService,
-  ) { }
+    private usuarioRepository: UsuarioRepository,
+    private cargoRepository: CargoRepository,
+  ) { super() }
 
-  async buscarUsuarioPorEmail(email_empresarial: string) {
-    let usuario = await this.usuarioPerfilRepository.findOne({ email_empresarial });
-    if (!usuario) return { code: 404, error: "Usuario não encontrado!" };
-    usuario = (await this.carregarInfoUsuario(usuario.id_usuario)).data
-    return { code: 200, data: usuario }
+  async buscarUsuarioPorEmail(email_empresarial: string): Promise<BasicResponseInterface> {
+    let usuario = await this.usuarioRepository.buscarUsuarioPerfilPorEmail(email_empresarial)
+    if (!usuario) return this.createReturn(404, "Usuario não encontrado!")
+    return this.createReturn(200, await this.usuarioRepository.buscaInfoCompletaUsuarioPorId(usuario.id_usuario))
   }
 
-  async cadastrarUsuario(usuario: UsuarioCadastroDto) {
-    const existUsuario = await this.usuarioPerfilRepository.findOne({ where: [{ cpf: usuario.cpf }, {email_empresarial: usuario.email_empresarial}]});
-    if (existUsuario) return { code: 409, error: 'Usuário já cadastrado!' }
-    const usuario_general: Usuario = Usuario.create({
-      ativo_SN: 'S',
-      colaborador_SN: 'S',
-      stamp_created: new Date(),
-      stamp_disable: null,
-      id_cargo: usuario.id_cargo
-    });
-    await usuario_general.save();
-
-    const usuario_perfil: UsuarioPerfil = UsuarioPerfil.create({
-      nome: usuario.nome,
-      email: usuario.email,
-      email_empresarial: usuario.email_empresarial,
-      cpf: usuario.cpf,
-      data_nasc: new Date(usuario.data_nasc),
-      contato: usuario.contato,
-      cidade: usuario.cidade,
-      estado: usuario.estado,
-      pais: usuario.pais,
-      senha: usuario.cpf,//Primeira senha será o cpf dele
-      id_usuario: usuario_general.id_usuario
-    });
-    await usuario_perfil.save();
-
-    const usuario_social: UsuarioSocial = UsuarioSocial.create({
-      avatar: 'usuarios/avatar/default.jpg',
-      banner: 'usuarios/banner/default.png',
-      id_usuario: usuario_general.id_usuario
-    });
-    await usuario_social.save();
-
-    const usuario_pontos: UsuarioPontuacao = UsuarioPontuacao.create({
-      id_usuario: usuario_general.id_usuario,
-      pontos: 0
-    });
-    await usuario_pontos.save();
-
-    let cargo = (await this.cargoService.findById(usuario.id_cargo)).data;
-    return {
-      code: 201,
-      data: {
-        ...usuario_general,
-        cargo,
-        perfil: usuario_perfil,
-        social: usuario_social,
-        pontos: usuario_pontos
-      }
-    };
-    //if (usuarioSalvo) // envia email
-    //https://notiz.dev/blog/send-emails-with-nestjs
-
+  async cadastrarUsuario(usuario: UsuarioCadastroInterface): Promise<BasicResponseInterface> {
+    const existeUsuario = await this.usuarioRepository.buscaUsuarioPerfilPorCpfEEmail(usuario.cpf, usuario.email_empresarial)
+    if (existeUsuario) return this.createReturn(409, 'Usuário já cadastrado!')
+    
+    return this.createReturn(201, await this.usuarioRepository.cadastraUsuarioCompleto(usuario))
   }
 
-  async carregarTodosUsuarios() {
-    let usuarios = await this.usuarioRepository.find();
-    if (!usuarios) return { code: 204, data: "Não foi encontrado registros!" }
+  async carregarTodosUsuarios(): Promise<BasicResponseInterface> {
+    let usuarios: any = await this.usuarioRepository.buscaTodosUsuarios();
+    if (!usuarios) return this.createReturn(204, "Não foi encontrado registros!")
     await Promise.all(
       usuarios.map(async (item) => {
-        item.cargo = (await this.cargoService.findById(item.id_cargo)).data;
-        item.perfil = await this.usuarioPerfilRepository.findOne({ id_usuario: item.id_usuario });
-        item.pontos = await this.usuarioPontuacaoRepository.findOne({ id_usuario: item.id_usuario });
+        item.cargo = await this.cargoRepository.buscaCargoPeloId(item.id_cargo)
+        item.perfil = await this.usuarioRepository.buscaUsuarioPerfilPorId(item.id_usuario)
+        item.pontos = await this.usuarioRepository.buscaUsuarioPontuacaoPorId(item.id_usuario)
       })
     )
-    return {
-      code: 200,
-      data: usuarios
-    };
+    return this.createReturn(200, usuarios)
   }
 
-  async carregarInfoUsuario(id_usuario: number) {
-    const usuario: UsuarioDto = await this.usuarioRepository.findOne(id_usuario);
-    if (!usuario) return { code: 404, error: "Usuario não encontrado!" };
 
-    const usuario_pontos: UsuarioPontuacaoDto = await this.usuarioPontuacaoRepository.findOne({ id_usuario });
-    const cargo: CargoDto = (await this.cargoService.findById(usuario.id_cargo)).data;
+  async carregarInfoUsuario(id_usuario: number): Promise<BasicResponseInterface> {
+    const usuario: UsuarioInterface = await this.usuarioRepository.buscaUsuarioPorId(id_usuario);
+    if (!usuario) return this.createReturn(404,"Usuario não encontrado!")
 
-    return {
-      code: 200,
-      data: {
-        id_usuario: usuario.id_usuario,
-        ativo_SN: usuario.ativo_SN,
-        colaborador_SN: usuario.colaborador_SN,
-        stamp_created: usuario.stamp_created,
-        cargo: cargo.nome,
-        pontos: usuario_pontos.pontos,
-        social: await this.usuarioSocialRepository.findOne({ id_usuario }),
-        perfil: await this.usuarioPerfilRepository.findOne({select: ["id_usuario_perfil", "nome", "email", "email_empresarial", "senha", "data_nasc", "contato", "cpf", "cidade", "estado", "pais", "id_usuario"], where:{ id_usuario }}),
-        feedback: null,
-      }
-    }
+    const usuario_pontos: UsuarioPontuacaoInterface = await this.usuarioRepository.buscaUsuarioPontuacaoPorId(id_usuario)
+    const cargo: CargoInterface = await this.cargoRepository.buscaCargoPeloId(usuario.id_cargo)
+
+    return this.createReturn(200, {
+      id_usuario: usuario.id_usuario,
+      ativo_SN: usuario.ativo_SN,
+      colaborador_SN: usuario.colaborador_SN,
+      stamp_created: usuario.stamp_created,
+      cargo: cargo.nome,
+      pontos: usuario_pontos.pontos,
+      social: await this.usuarioRepository.buscaUsuarioSocialPorId({ id_usuario }),
+      perfil: await this.usuarioRepository.buscaUsuarioPerfilPorId(id_usuario),
+      feedback: null,
+    })
   }
 
-  async carregarInfoSocial(id_usuario: number) {
-    const usuario = await this.usuarioSocialRepository.findOne(id_usuario);
-    if (!usuario) return { code: 404, error: "Usuario não encontrado!" };
-    return { code: 200, data: usuario }
+  async carregarInfoSocial(id_usuario: number): Promise<BasicResponseInterface> {
+    const usuario = await this.usuarioRepository.buscaUsuarioSocialPorId(id_usuario);
+    if (!usuario) return this.createReturn(404, "Usuario não encontrado!")
+    return this.createReturn(200, usuario)
   }
 
-  async carregarInfoPerfil(id_usuario: number) {
-    const usuario = await this.usuarioPerfilRepository.findOne(id_usuario);
-    if (!usuario) return { code: 404, error: "Usuario não encontrado!" };
-    return { code: 200, data: usuario }
+  async carregarInfoPerfil(id_usuario: number): Promise<BasicResponseInterface> {
+    const usuario = await this.usuarioRepository.buscaUsuarioPerfilPorId(id_usuario);
+    if (!usuario) return this.createReturn(404, "Usuario não encontrado!")
+    return this.createReturn(200, usuario)
   }
 
-  async atualizarUsuarioPerfil(id_usuario: number, data) {
-    if (!await this.usuarioRepository.findOne(id_usuario)) return { code: 404, error: 'Usuario não existe!' };
-    await this.usuarioPerfilRepository.update({ id_usuario }, data);
-    return { code: 200, data: await this.usuarioPerfilRepository.findOne({ id_usuario }) };
+  async atualizarUsuarioPerfil(id_usuario: number, data): Promise<BasicResponseInterface> {
+    if (!await this.usuarioRepository.buscaUsuarioPorId(id_usuario)) return this.createReturn(404, 'Usuario não existe!');
+    const usuario = await this.usuarioRepository.atualizarUsuarioPerfil(id_usuario , data);
+    return this.createReturn(200,usuario)
   }
 
-  async atualizarUsuarioSocial(id_usuario: number, data) {
-    if (!await this.usuarioSocialRepository.findOne(id_usuario)) return { code: 404, error: 'Usuario não existe!' };
-    await this.usuarioSocialRepository.update({ id_usuario }, data);
-    return { code: 200, data: await this.usuarioSocialRepository.findOne({ id_usuario }) };
+  async atualizarUsuarioSocial(id_usuario: number, data): Promise<BasicResponseInterface> {
+    if (!await this.usuarioRepository.buscaUsuarioPorId(id_usuario)) return this.createReturn(404, 'Usuario não existe!');
+    const usuario = await this.usuarioRepository.atualizarUsuarioSocial(id_usuario , data);
+    return this.createReturn(200,usuario)
   }
 
-  async deletarUsuario(id_usuario: number) {
-    if (!id_usuario) return { code: 500, error: "Passe o parametro corretamente!" };
-    if (await this.usuarioRepository.findOne({ id_usuario })) {
-      await this.usuarioSocialRepository.delete({ id_usuario });
-      await this.usuarioPerfilRepository.delete({ id_usuario });
-      await this.usuarioPontuacaoRepository.delete({ id_usuario });
-      await this.usuarioRepository.delete({ id_usuario });
-      //no futuro com o uso de mais tabelas será preciso conectar outros repositórios
-      return { code: 204, data: true };
-    } else {
-      return { code: 404, error: "Usuario não encontrado!" }
-    }
+  async deletarUsuario(id_usuario: number): Promise<BasicResponseInterface> {
+    if (!id_usuario) return this.createReturn(500, "Passe o parametro corretamente!");
+    const res = await this.usuarioRepository.deletarUsuario(id_usuario)
+    return this.createReturn(res ? 204:404, res? true: "Usuario não encontrado!")
   }
   
-  async toggleAtivoOuInativo(id_usuario: number) {
-    const usuario = await this.usuarioRepository.findOne(id_usuario);
-    if (!usuario) return { code: 500, error: "Usuario não encontrado!" };
-
-    await getConnection()
-      .createQueryBuilder()
-      .update(Usuario)
-      .set({ ativo_SN: usuario.ativo_SN == 'S' ? 'N' : 'S' })
-      .where("id_usuario = :id", { id: id_usuario })
-      .execute();
-
-    return { code: 200, data: true }
+  async toggleAtivoOuInativo(id_usuario: number): Promise<BasicResponseInterface> {
+    const usuario = await this.usuarioRepository.buscaUsuarioPorId(id_usuario);
+    if (!usuario) return this.createReturn(404, "Usuario não encontrado!");
+    return this.createReturn(200, await this.usuarioRepository.toggleAtivoOuInativo(usuario))
   }
 
-  async addAvatar(dataBuffer: Buffer, id_usuario: number) {
-    const usuario = await this.usuarioRepository.findOne(id_usuario);
-    if (!usuario) return { code: 404, error: "Usuario não encontrado!" };
+  async addAvatar(dataBuffer: Buffer, id_usuario: number): Promise<BasicResponseInterface> {
+    const usuario = await this.usuarioRepository.buscaUsuarioSocialPorId(id_usuario);
+    if (!usuario) return this.createReturn(404,"Usuario não encontrado!")
 
     const path = `usuarios/avatar/${id_usuario}/avatar.jpeg`;
     const s3 = new S3();
@@ -194,21 +109,18 @@ export class UsuarioService {
       ContentType: 'image/jpeg',
       Key: path
     }).promise();
-
-    await getConnection()
-      .createQueryBuilder()
-      .update(UsuarioSocial)
-      .set({ avatar: path })
-      .where("id_usuario = :id", { id: id_usuario })
-      .execute();
-
-    return { code: 201, data: await this.getAvatar(id_usuario) };
+    await this.usuarioRepository.atualizarPathAvatarUsuarioSocial(path, id_usuario)
+    const params = {
+      Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
+      Key: usuario.avatar,
+      Expires: 86400 // 24hrs
+    }
+    return this.createReturn(201, await s3.getSignedUrl('getObject', params))
   }
 
-  async addBanner(dataBuffer: Buffer, id_usuario: number) {
-    const usuario = await this.usuarioRepository.findOne(id_usuario);
-    if (!usuario) return { code: 404, error: "Usuario não encontrado!" };
-
+  async addBanner(dataBuffer: Buffer, id_usuario: number): Promise<BasicResponseInterface> {
+    const usuario = await this.usuarioRepository.buscaUsuarioSocialPorId(id_usuario);
+    if (!usuario) return this.createReturn(404,"Usuario não encontrado!")
     const path = `usuarios/banner/${id_usuario}/banner.jpeg`;
     const s3 = new S3();
     await s3.upload({
@@ -218,60 +130,42 @@ export class UsuarioService {
       ACL: 'public-read',
       Key: path
     }).promise();
-
-    await getConnection()
-      .createQueryBuilder()
-      .update(UsuarioSocial)
-      .set({ banner: path })
-      .where("id_usuario = :id", { id: id_usuario })
-      .execute();
-
-    return { code: 201, data: await this.getBanner(id_usuario) };
+    await this.usuarioRepository.atualizarPathBannerUsuarioSocial(path, id_usuario)
+    const params = {
+      Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
+      Key: usuario.banner,
+      Expires: 86400 // 24hrs
+    }
+    return this.createReturn(201, await s3.getSignedUrl('getObject', params))
   }
 
-  async deleteAvatar(id_usuario: number) {
-    const usuario = await this.usuarioSocialRepository.findOne({ id_usuario });
-    if (!usuario) return { code: 404, error: "Usuario não encontrado!" };
-
+  async deleteAvatar(id_usuario: number): Promise<BasicResponseInterface> {
+    const usuario = await this.usuarioRepository.buscaUsuarioSocialPorId(id_usuario);
+    if (!usuario) return this.createReturn(404,"Usuario não encontrado!")
     const s3 = new S3();
     await s3.deleteObject({
       Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
       Key: usuario.avatar,
     }).promise();
-
-    await getConnection()
-      .createQueryBuilder()
-      .update(UsuarioSocial)
-      .set({ avatar: 'usuarios/avatar/default.jpg' })
-      .where("id_usuario = :id", { id: id_usuario })
-      .execute();
-
-    return { code: 204, data: true };
+    await this.usuarioRepository.atualizarPathAvatarUsuarioSocial('usuarios/avatar/default.jpg', id_usuario)
+    return this.createReturn(204,true)
   }
 
-  async deleteBanner(id_usuario: number) {
-    const usuario = await this.usuarioSocialRepository.findOne({ id_usuario });
-    if (!usuario) return { code: 404, error: "Usuario não encontrado!" };
-
+  async deleteBanner(id_usuario: number): Promise<BasicResponseInterface> {
+    const usuario = await this.usuarioRepository.buscaUsuarioSocialPorId(id_usuario);
+    if (!usuario) return this.createReturn(404,"Usuario não encontrado!")
     const s3 = new S3();
     await s3.deleteObject({
       Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
       Key: usuario.avatar,
     }).promise();
-
-    await getConnection()
-      .createQueryBuilder()
-      .update(UsuarioSocial)
-      .set({ avatar: 'usuarios/banner/default.jpg' })
-      .where("id_usuario = :id", { id: id_usuario })
-      .execute();
-
-    return { code: 204, data: true };
+    await this.usuarioRepository.atualizarPathBannerUsuarioSocial('usuarios/banner/default.jpg', id_usuario)
+    return this.createReturn(204,true)
   }
 
-  async getAvatar(id_usuario: number) {
-    const usuario = await this.usuarioSocialRepository.findOne({ id_usuario });
-    if (!usuario) return { code: 404, error: "Usuario não encontrado!" };
+  async getAvatar(id_usuario: number): Promise<BasicResponseInterface> {
+    const usuario = await this.usuarioRepository.buscaUsuarioSocialPorId(id_usuario);
+    if (!usuario) return this.createReturn(404,"Usuario não encontrado!")
 
     const s3 = new S3();
     var params = {
@@ -280,15 +174,12 @@ export class UsuarioService {
       Expires: 86400 // 24hrs
     };
 
-    return {
-      code: 200,
-      data: s3.getSignedUrl('getObject', params)
-    }
+    return this.createReturn(200,s3.getSignedUrl('getObject', params))
   }
 
-  async getBanner(id_usuario: number) {
-    const usuario = await this.usuarioSocialRepository.findOne({ id_usuario });
-    if (!usuario) return { code: 404, error: "Usuario não encontrado!" };
+  async getBanner(id_usuario: number): Promise<BasicResponseInterface> {
+    const usuario = await this.usuarioRepository.buscaUsuarioSocialPorId(id_usuario);
+    if (!usuario) return this.createReturn(404,"Usuario não encontrado!")
 
     const s3 = new S3();
     var params = {
@@ -297,10 +188,7 @@ export class UsuarioService {
       Expires: 86400 // 24hrs
     };
 
-    return {
-      code: 200,
-      data: s3.getSignedUrl('getObject', params)
-    }
+    return this.createReturn(200,s3.getSignedUrl('getObject', params))
   }
 
 }
