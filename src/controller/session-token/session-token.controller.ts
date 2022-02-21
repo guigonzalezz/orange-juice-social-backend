@@ -1,5 +1,5 @@
 import { Body, Controller, Put, Res } from '@nestjs/common';
-import { RefreshTokenDto } from 'src/service/session-token/dto/refresh.token.dto';
+import { RefreshTokenDto } from 'src/controller/session-token/dto/refresh.token.dto';
 import { SessionTokenService } from 'src/service/session-token/session-token.service';
 
 

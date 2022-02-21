@@ -1,19 +1,26 @@
-import { forwardRef, Module } from '@nestjs/common';
-import { DatabaseModule } from '../../repository/database/database.module';
+import { Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
 import { UsuarioController } from './usuario.controller';
-import { usuarioProviders } from '../../repository/database/usuario/usuario.providers';
 import { UsuarioService } from '../../service/usuario/usuario.service';
-import { CargoModule } from '../cargo/cargo.module';
-import { AuthModule } from '../auth/auth.module';
-import { ContentfulModule } from '../contentful/contentful.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { JwtStrategy } from 'src/infraestructure/auth/jwt.strategy';
+import { CargoRepository } from 'src/repository/database/cargo/cargo.repository';
+import { UsuarioRepository } from 'src/repository/database/usuario/usuario.repository';
+import { Usuario } from 'src/repository/database/usuario/entidades/usuario.entity';
+import { UsuarioPerfil } from 'src/repository/database/usuario/entidades/usuario_perfil.entity';
+import { UsuarioSocial } from 'src/repository/database/usuario/entidades/usuario_social.entity';
+import { UsuarioPontuacao } from 'src/repository/database/usuario/entidades/usuario_pontuacao.entity';
+import { Cargo } from 'src/repository/database/cargo/entidades/cargo.entity';
 
 @Module({
-  imports: [DatabaseModule, ContentfulModule, CargoModule, forwardRef(() => AuthModule)],
+  imports: [TypeOrmModule.forFeature([Usuario, UsuarioPerfil, UsuarioSocial, UsuarioPontuacao, Cargo]), HttpModule],
   controllers: [UsuarioController],
   providers: [
-    ...usuarioProviders,
-    UsuarioService
+    CargoRepository,
+    UsuarioRepository,
+    UsuarioService,
+    JwtStrategy
   ],
-  exports: [UsuarioService],
+  exports: [TypeOrmModule],
 })
 export class UsuarioModule { }

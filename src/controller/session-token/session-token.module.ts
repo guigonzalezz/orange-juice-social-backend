@@ -1,20 +1,22 @@
 import { forwardRef, Module } from "@nestjs/common";
-import { DatabaseModule } from "src/repository/database/database.module";
-import { sessionTokenProviders } from "src/repository/database/session-token/session-token.providers";
+import { HttpModule } from '@nestjs/axios';
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { SessionTokenRepository } from "src/repository/database/session-token/session-token.repository";
+import { UsuarioRepository } from "src/repository/database/usuario/usuario.repository";
+import { AuthService } from "src/service/auth/auth.service";
 import { SessionTokenService } from "src/service/session-token/session-token.service";
-import { AuthModule } from "../auth/auth.module";
-import { UsuarioModule } from "../usuario/usuario.module";
 import { SessionTokenController } from "./session-token.controller";
-
-
+import { SessionToken } from "src/repository/database/session-token/entidades/session-token.entity";
+import { AuthModule } from "../auth/auth.module";
 
 @Module({
-  imports: [DatabaseModule, forwardRef(()=>AuthModule), UsuarioModule],
+  imports: [TypeOrmModule.forFeature([SessionToken]), HttpModule, forwardRef(()=>AuthModule)],
   controllers: [SessionTokenController],
   providers: [
-    ...sessionTokenProviders,
-    SessionTokenService
+    SessionTokenService,
+    SessionTokenRepository,
+    UsuarioRepository,
   ],
-  exports: [SessionTokenService],
+  exports: [SessionTokenService, TypeOrmModule],
 })
 export class SessionTokenModule {}

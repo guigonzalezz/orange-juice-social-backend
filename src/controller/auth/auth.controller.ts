@@ -2,6 +2,7 @@ import { Controller, Get, Post, Request, Response, UseGuards } from '@nestjs/com
 import { JwtAuthGuard } from 'src/infraestructure/auth/jwt-auth.guard';
 import { LocalAuthGuard } from 'src/infraestructure/auth/local-auth.guard';
 import { AuthService } from 'src/service/auth/auth.service';
+import { BasicResponseDto } from './dto/BasicResponse.dto';
 
 
 @Controller('auth')
@@ -10,9 +11,9 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() request, @Response() response) {
+  async login(@Request() request, @Response() response): Promise<any> {
     const result = await this.authService.login(request.user)
-    if (await (result).data) response.status(result.code).send(result)
+    if (result.data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result);
   }
 

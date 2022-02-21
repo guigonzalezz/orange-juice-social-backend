@@ -1,16 +1,20 @@
-import { Module } from '@nestjs/common';
-import { DatabaseModule } from '../../repository/database/database.module';
-import { CargoController } from './cargo.controller';
-import { cargoProviders } from '../../repository/database/cargo/cargo.providers';
-import { CargoService } from '../../service/cargo/cargo.service';
+import { HttpModule } from '@nestjs/axios'
+import { Module } from '@nestjs/common'
+import { CargoController } from './cargo.controller'
+import { CargoService } from '../../service/cargo/cargo.service'
+import { CargoRepository } from 'src/repository/database/cargo/cargo.repository'
+import { JwtStrategy } from 'src/infraestructure/auth/jwt.strategy'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { Cargo } from 'src/repository/database/cargo/entidades/cargo.entity'
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [TypeOrmModule.forFeature([Cargo]), HttpModule],
   controllers: [CargoController],
   providers: [
-    ...cargoProviders,
+    CargoRepository,
     CargoService,
+    JwtStrategy
   ],
-  exports: [CargoService],
+  exports: [TypeOrmModule],
 })
 export class CargoModule { }
