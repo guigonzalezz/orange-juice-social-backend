@@ -17,14 +17,15 @@ export class UsuarioService extends BaseServiceGeneric {
   async buscarUsuarioPorEmail(email_empresarial: string): Promise<BasicResponseInterface> {
     let usuario = await this.usuarioRepository.buscarUsuarioPerfilPorEmail(email_empresarial)
     if (!usuario) return this.createReturn(404, "Usuario não encontrado!")
-    return this.createReturn(200, await this.usuarioRepository.buscaInfoCompletaUsuarioPorId(usuario.id_usuario))
+    const cargo = await this.cargoRepository.buscaCargoPeloId(email_empresarial)
+    return this.createReturn(200, await this.usuarioRepository.buscaInfoCompletaUsuarioPorId(usuario.id_usuario, cargo))
   }
 
   async cadastrarUsuario(usuario: UsuarioCadastroInterface): Promise<BasicResponseInterface> {
     const existeUsuario = await this.usuarioRepository.buscaUsuarioPerfilPorCpfEEmail(usuario.cpf, usuario.email_empresarial)
     if (existeUsuario) return this.createReturn(409, 'Usuário já cadastrado!')
-    
-    return this.createReturn(201, await this.usuarioRepository.cadastraUsuarioCompleto(usuario))
+    const cargo = await this.cargoRepository.buscaCargoPeloId(usuario.id_cargo)
+    return this.createReturn(201, await this.usuarioRepository.cadastraUsuarioCompleto(usuario, cargo))
   }
 
   async carregarTodosUsuarios(): Promise<BasicResponseInterface> {
