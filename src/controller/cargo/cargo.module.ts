@@ -5,10 +5,10 @@ import { CargoService } from '../../service/cargo/cargo.service'
 import { CargoRepository } from 'src/repository/database/cargo/cargo.repository'
 import { JwtStrategy } from 'src/infraestructure/auth/jwt.strategy'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { Cargo } from 'src/repository/database/cargo/entidades/cargo.entity'
+import { CargoV2 } from 'src/repository/database/cargo/entidades/cargo.entity'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Cargo]), HttpModule],
+  imports: [TypeOrmModule.forFeature([CargoV2]), HttpModule],
   controllers: [CargoController],
   providers: [
     CargoRepository,

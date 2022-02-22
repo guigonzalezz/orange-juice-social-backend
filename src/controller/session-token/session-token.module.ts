@@ -6,16 +6,18 @@ import { UsuarioRepository } from "src/repository/database/usuario/usuario.repos
 import { AuthService } from "src/service/auth/auth.service";
 import { SessionTokenService } from "src/service/session-token/session-token.service";
 import { SessionTokenController } from "./session-token.controller";
-import { SessionToken } from "src/repository/database/session-token/entidades/session-token.entity";
+import { SessionTokenV2 } from "src/repository/database/session-token/entidades/session-token.entity";
 import { AuthModule } from "../auth/auth.module";
+import { UsuarioModule } from "../usuario/usuario.module";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SessionToken]), HttpModule, forwardRef(()=>AuthModule)],
+  imports: [TypeOrmModule.forFeature([SessionTokenV2]), HttpModule, UsuarioModule, forwardRef(()=>AuthModule)],
   controllers: [SessionTokenController],
   providers: [
+    UsuarioRepository,
+    AuthService,
     SessionTokenService,
     SessionTokenRepository,
-    UsuarioRepository,
   ],
   exports: [SessionTokenService, TypeOrmModule],
 })

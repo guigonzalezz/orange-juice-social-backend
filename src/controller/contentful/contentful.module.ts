@@ -6,9 +6,7 @@ import { ContentfulRepository } from 'src/repository/contentful/contentful.repos
 @Module({
   imports: [],
   controllers: [ContentfulController],
-  providers: [
-    ContentfulRepository,
-    ContentfulService
-  ],
+  providers: [ContentfulRepository,ContentfulService],
+  exports:[ContentfulRepository,ContentfulService]
 })
 export class ContentfulModule { }

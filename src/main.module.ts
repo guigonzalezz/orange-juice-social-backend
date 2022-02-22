@@ -12,8 +12,8 @@ import { UsuarioModule } from './controller/usuario/usuario.module';
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot(configService.getTypeOrmConfig()),
     AuthModule,
-    UsuarioModule,
-    CargoModule,
+    // UsuarioModule,
+    // CargoModule,
     ContentfulModule
   ],
   controllers: [],

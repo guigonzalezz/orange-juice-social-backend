@@ -7,6 +7,7 @@ import { LocalStrategy } from 'src/infraestructure/auth/local.strategy';
 import { SessionTokenRepository } from 'src/repository/database/session-token/session-token.repository';
 import { UsuarioRepository } from 'src/repository/database/usuario/usuario.repository';
 import { AuthService } from 'src/service/auth/auth.service';
+import { SessionTokenModule } from '../session-token/session-token.module';
 import { AuthController } from './auth.controller';
 require("dotenv").config();
 
@@ -14,6 +15,7 @@ require("dotenv").config();
   imports: [
     UsuarioModule,
     PassportModule,
+    SessionTokenModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET_KEY,
       signOptions: { expiresIn: '60s'},
