@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, BaseEntity, OneToOne, JoinColumn } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { Usuario } from './usuario.entity';
+import { UsuarioV2 } from './usuario.entity';
 
 @Entity("usuario_perfil")
 export class UsuarioPerfil extends BaseEntity {
@@ -48,9 +48,9 @@ export class UsuarioPerfil extends BaseEntity {
   @Column({ nullable: true })
   id_usuario: number;
 
-  @OneToOne(() => Usuario)
+  @OneToOne(() => UsuarioV2)
   @JoinColumn({ name: 'id_usuario' })
-  usuario: Usuario
+  usuario: UsuarioV2
 }
 
 

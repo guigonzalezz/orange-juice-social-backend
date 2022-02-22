@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { SessionToken } from "src/repository/database/session-token/entidades/session-token.entity";
+import { SessionTokenV2 } from "src/repository/database/session-token/entidades/session-token.entity";
 import { Repository } from "typeorm";
 import { UsuarioRepository } from "../usuario/usuario.repository";
 
@@ -9,8 +9,8 @@ import { UsuarioRepository } from "../usuario/usuario.repository";
 @Injectable()
 export class SessionTokenRepository {
   constructor(
-    @InjectRepository(SessionToken)
-    private sessionTokenRepository: Repository<SessionToken>,
+    @InjectRepository(SessionTokenV2)
+    private sessionTokenRepository: Repository<SessionTokenV2>,
   ) {}
 
   async buscaSessionTokenPorEmailEmpresarial(email_empresarial) {

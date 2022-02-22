@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Usuario } from 'src/repository/database/usuario/entidades/usuario.entity';
+import { UsuarioV2 } from 'src/repository/database/usuario/entidades/usuario.entity';
 import { UsuarioPerfil } from 'src/repository/database/usuario/entidades/usuario_perfil.entity';
 import { UsuarioPontuacao } from 'src/repository/database/usuario/entidades/usuario_pontuacao.entity';
 import { UsuarioSocial } from 'src/repository/database/usuario/entidades/usuario_social.entity';
@@ -9,15 +9,14 @@ import { CargoRepository } from '../cargo/cargo.repository';
 @Injectable()
 export class UsuarioRepository {
   constructor(
-    @InjectRepository(Usuario)
-    private usuarioRepository: Repository<Usuario>,
     @InjectRepository(UsuarioPerfil)
     private usuarioPerfilRepository: Repository<UsuarioPerfil>,
+    @InjectRepository(UsuarioV2)
+    private usuarioRepository: Repository<UsuarioV2>,
     @InjectRepository(UsuarioSocial)
     private usuarioSocialRepository: Repository<UsuarioSocial>,
     @InjectRepository(UsuarioPontuacao)
     private usuarioPontuacaoRepository: Repository<UsuarioPontuacao>,
-    private readonly cargoRepository: CargoRepository,
   ) { }
 
   async buscarUsuarioPerfilPorEmail(email_empresarial: string): Promise<UsuarioPerfil> {
@@ -28,11 +27,13 @@ export class UsuarioRepository {
     return await this.usuarioPerfilRepository.findOne({ where:{cpf, email_empresarial}});
   }
 
-  async buscaInfoCompletaUsuarioPorId(id_usuario) {
+  async buscaIdCargoPorEmailEmpresarial(email_empresarial: string): Promise<number>{
+    return (await this.usuarioRepository.findOne({ where:{ email_empresarial}, select: ['id_cargo']})).id_cargo
+  }
+
+  async buscaInfoCompletaUsuarioPorId(id_usuario,cargo) {
     const usuario = await this.usuarioRepository.findOne({ id_usuario});
     const usuario_pontos = await this.usuarioPontuacaoRepository.findOne({ id_usuario });
-    const cargo = await this.cargoRepository.buscaCargoPeloId(usuario.id_cargo)
-
     return {
       id_usuario: usuario.id_usuario,
       ativo_SN: usuario.ativo_SN,
@@ -62,19 +63,16 @@ export class UsuarioRepository {
     return await this.usuarioPontuacaoRepository.findOne({id_usuario})
   }
 
-  async cadastraUsuarioCompleto(usuario) {
-
-  }
-
-  async cadastrarUsuario(usuario) {
+  
+  async cadastraUsuarioCompleto(usuario, cargo) {
     const existUsuario = await this.usuarioPerfilRepository.findOne({ where: [{ cpf: usuario.cpf }, {email_empresarial: usuario.email_empresarial}]});
     if (existUsuario) return { code: 409, error: 'Usuário já cadastrado!' }
-    const usuario_general: Usuario = await this.usuarioRepository.save({
+    const usuario_general: UsuarioV2 = await this.usuarioRepository.save({
       ativo_SN: 'S',
       colaborador_SN: 'S',
       stamp_created: new Date(),
       stamp_disable: null,
-      id_cargo: usuario.id_cargo
+      id_cargo: cargo.id_cargo
     })
 
     const usuario_perfil: UsuarioPerfil = await this.usuarioPerfilRepository.save({
@@ -102,7 +100,6 @@ export class UsuarioRepository {
       pontos: 0
     })
 
-    let cargo = await this.cargoRepository.buscaCargoPeloId(usuario.id_cargo)
     return {
       ...usuario_general,
       cargo,
@@ -143,7 +140,7 @@ export class UsuarioRepository {
   async toggleAtivoOuInativo(usuario) {
     await getConnection()
       .createQueryBuilder()
-      .update(Usuario)
+      .update(UsuarioV2)
       .set({ ativo_SN: usuario.ativo_SN == 'S' ? 'N' : 'S' })
       .where("id_usuario = :id", { id: usuario.id_usuario })
       .execute();

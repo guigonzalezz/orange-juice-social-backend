@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Cargo } from './entidades/cargo.entity';
+import { CargoV2 } from './entidades/cargo.entity';
 
 @Injectable()
 export class CargoRepository {
   constructor(
-    @InjectRepository(Cargo)
-    private cargoRepository: Repository<Cargo>,
+    @InjectRepository(CargoV2)
+    private cargoRepository: Repository<CargoV2>,
   ) { }
 
-  async buscaTodosCargos(): Promise<Cargo[]>{
+  async buscaTodosCargos(): Promise<CargoV2[]>{
     return await this.cargoRepository.find()
   }
 

@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from 'typeorm';
 @Entity()
-export class SessionToken {
+export class SessionTokenV2 {
   @PrimaryGeneratedColumn()
   id_token: number;
 
