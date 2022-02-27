@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from 'typeorm';
-@Entity()
+@Entity("session_token")
 export class SessionTokenV2 {
   @PrimaryGeneratedColumn()
   id_token: number;
