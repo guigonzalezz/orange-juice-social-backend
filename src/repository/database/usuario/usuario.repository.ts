@@ -3,9 +3,10 @@ import { UsuarioV2 } from 'src/repository/database/usuario/entidades/usuario.ent
 import { UsuarioPerfil } from 'src/repository/database/usuario/entidades/usuario_perfil.entity';
 import { UsuarioPontuacao } from 'src/repository/database/usuario/entidades/usuario_pontuacao.entity';
 import { UsuarioSocial } from 'src/repository/database/usuario/entidades/usuario_social.entity';
-import { Repository, getConnection } from 'typeorm';
+import { Repository, getConnection, In } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CargoRepository } from '../cargo/cargo.repository';
+import { UsuarioFollow } from './entidades/usuario_follow.entity';
 @Injectable()
 export class UsuarioRepository {
   constructor(
@@ -17,6 +18,8 @@ export class UsuarioRepository {
     private usuarioSocialRepository: Repository<UsuarioSocial>,
     @InjectRepository(UsuarioPontuacao)
     private usuarioPontuacaoRepository: Repository<UsuarioPontuacao>,
+    @InjectRepository(UsuarioFollow)
+    private usuarioFollowRepository: Repository<UsuarioFollow>,
   ) { }
 
   async buscarUsuarioPerfilPorEmail(email_empresarial: string): Promise<UsuarioPerfil> {
@@ -166,5 +169,55 @@ export class UsuarioRepository {
       .execute();
   }
 
+  async seguir(id_seguidor, id_seguido){
+    const jaSeguiu = await this.usuarioFollowRepository.findOne({ where:{ seguido: id_seguido, seguidor: id_seguidor}})
+    if(!jaSeguiu) {
+      await this.usuarioFollowRepository.save({
+        seguido: id_seguido,
+        seguidor: id_seguidor
+      })  
+      //seguindo
+      let qtd_seguindo = (await this.usuarioSocialRepository.findOne({select:['seguindo'],where:{id_usuario_social: id_seguidor}})).seguindo
+      await this.usuarioSocialRepository.update({id_usuario_social: id_seguidor},{seguindo: qtd_seguindo + 1})
+      //seguidores
+      let qtd_seguidores = (await this.usuarioSocialRepository.findOne({select:['seguidores'],where:{id_usuario_social: id_seguido}})).seguidores
+      await this.usuarioSocialRepository.update({id_usuario_social: id_seguido},{seguidores: qtd_seguidores + 1})
+    }
+  }
 
+  async deixarDeSeguir(id_seguidor, id_seguido){
+    const segue = await this.usuarioFollowRepository.findOne({ where:{ seguido: id_seguido, seguidor: id_seguidor}})
+    if(segue) {
+      await this.usuarioFollowRepository.delete({
+        seguido: id_seguido,
+        seguidor: id_seguidor
+      })  
+      //seguindo
+      let qtd_seguindo = (await this.usuarioSocialRepository.findOne({select:['seguindo'],where:{id_usuario_social: id_seguidor}})).seguindo
+      await this.usuarioSocialRepository.update({id_usuario_social: id_seguidor},{seguindo: qtd_seguindo - 1})
+      //seguidores
+      let qtd_seguidores = (await this.usuarioSocialRepository.findOne({select:['seguidores'],where:{id_usuario_social: id_seguido}})).seguidores
+      await this.usuarioSocialRepository.update({id_usuario_social: id_seguido},{seguidores: qtd_seguidores - 1})
+    }
+  }
+
+  async listarIdsSeguidores(id_usuario_social) {
+    return await this.usuarioFollowRepository.find({select:['seguidor'], where: {seguido: id_usuario_social}})
+  }
+
+  async listarIdsQuemSigo(id_usuario_social) {
+    return await this.usuarioFollowRepository.find({select:['seguido'], where: {seguidor: id_usuario_social}})
+  }
+
+  async buscaInfoSocialPorIds(ids) {
+    return await this.usuarioSocialRepository.find({select:['avatar', 'id_usuario'], where:{ id_usuario_social: In(ids)} })
+  }
+
+  async buscaNomePerfilPorIdUsuario(id) {
+    return (await this.usuarioPerfilRepository.findOne({select:['nome'], where:{id_usuario: id}})).nome
+  }
+
+  async buscaQtdSeguindoESeguidores(id_usuario_social) {
+    return await this.usuarioSocialRepository.findOne({select:['seguidores', 'seguindo'], where:{id_usuario_social}})
+  }
 }

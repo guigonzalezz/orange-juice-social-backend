@@ -192,4 +192,48 @@ export class UsuarioService extends BaseServiceGeneric {
     return this.createReturn(200,s3.getSignedUrl('getObject', params))
   }
 
+  async seguir(id_seguidor, id_seguido): Promise<BasicResponseInterface> {
+    await this.usuarioRepository.seguir(id_seguidor, id_seguido)  
+    return this.createReturn(200, 'OK')
+  }
+
+  async deixarDeSeguir(id_seguidor, id_seguido): Promise<BasicResponseInterface> {
+    await this.usuarioRepository.deixarDeSeguir(id_seguidor, id_seguido)  
+    return this.createReturn(200, 'OK')
+  }
+
+  async listarSeguidores(id): Promise<BasicResponseInterface> {
+    const ids_seguidores = (await this.usuarioRepository.listarIdsSeguidores(id)).map(usuario => usuario.seguidor)  
+    const seguidores = await this.usuarioRepository.buscaInfoSocialPorIds(ids_seguidores)
+    const retorno = []
+    for(let usuario of seguidores) {
+      retorno.push({
+        avatar: (await this.getAvatar(usuario.id_usuario)).data,
+        nome: await this.usuarioRepository.buscaNomePerfilPorIdUsuario(usuario.id_usuario)
+      })
+    }
+
+    return this.createReturn(200,retorno)
+  }
+
+  async listarQuemSigo(id): Promise<BasicResponseInterface> {
+    const ids_seguindo = (await this.usuarioRepository.listarIdsQuemSigo(id)).map(usuario => usuario.seguido)  
+    const seguindo = await this.usuarioRepository.buscaInfoSocialPorIds(ids_seguindo)
+    const retorno = []
+    for(let usuario of seguindo) {
+      retorno.push({
+        avatar: (await this.getAvatar(usuario.id_usuario)).data,
+        nome: await this.usuarioRepository.buscaNomePerfilPorIdUsuario(usuario.id_usuario)
+      })
+    }
+
+    return this.createReturn(200, retorno)
+  }
+
+  async quantosSeguindoESeguidores(id_usuario_social) : Promise<BasicResponseInterface> {
+    return this.createReturn(200, 
+      await this.usuarioRepository.buscaQtdSeguindoESeguidores(id_usuario_social)
+    )
+  }
+
 }

@@ -113,5 +113,39 @@ export class UsuarioController {
     if (await (result).data) response.status(result.code).send(result)
     else return response.status(result.code).send(result)
   }
+  
+  @Post('seguir')
+  async seguir(@Query('seguidor') id_seguidor: number, @Query('seguido') id_seguido: number, @Res() response) {
+    const result = await this.usuarioService.seguir(id_seguidor, id_seguido);
+    if (await (result).data) response.status(result.code).send(result)
+    else return response.status(result.code).send(result)
+  }
 
+  @Post('deixar_de_seguir')
+  async deixarDeSeguir(@Query('seguidor') id_seguidor: number, @Query('seguido') id_seguido: number, @Res() response) {
+    const result = await this.usuarioService.deixarDeSeguir(id_seguidor, id_seguido);
+    if (await (result).data) response.status(result.code).send(result)
+    else return response.status(result.code).send(result)
+  }
+
+  @Get('listar_seguidores')
+  async listarSeguidores(@Query('id_usuario_social') id: number, @Res() response) {
+    const result = await this.usuarioService.listarSeguidores(id);
+    if (await (result).data) response.status(result.code).send(result)
+    else return response.status(result.code).send(result)
+  }
+
+  @Get('listar_quem_sigo')
+  async listarQuemSigo(@Query('id_usuario_social') id: number, @Res() response) {
+    const result = await this.usuarioService.listarQuemSigo(id);
+    if (await (result).data) response.status(result.code).send(result)
+    else return response.status(result.code).send(result)
+  }
+
+  @Get('qtd_seguindo_e_seguidores')
+  async quantosSeguindoESeguidores(@Query('id_usuario_social') id: number, @Res() response) {
+    const result = await this.usuarioService.quantosSeguindoESeguidores(id);
+    if (await (result).data) response.status(result.code).send(result)
+    else return response.status(result.code).send(result)
+  }
 }

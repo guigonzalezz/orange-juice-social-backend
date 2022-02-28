@@ -13,7 +13,7 @@ export class UsuarioV2 extends BaseEntity {
   @Column({ length: 1 })
   colaborador_SN: string;
 
-  @Column()
+  @Column({default: () => 'CURRENT_TIMESTAMP' })
   stamp_created: Date;
 
   @Column({ nullable: true })

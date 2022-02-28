@@ -11,9 +11,10 @@ import { UsuarioSocial } from 'src/repository/database/usuario/entidades/usuario
 import { UsuarioPontuacao } from 'src/repository/database/usuario/entidades/usuario_pontuacao.entity';
 import { CargoModule } from '../cargo/cargo.module';
 import { CargoRepository } from 'src/repository/database/cargo/cargo.repository';
+import { UsuarioFollow } from 'src/repository/database/usuario/entidades/usuario_follow.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UsuarioV2, UsuarioPerfil, UsuarioSocial, UsuarioPontuacao]), HttpModule, CargoModule],
+  imports: [TypeOrmModule.forFeature([UsuarioV2, UsuarioPerfil, UsuarioSocial, UsuarioPontuacao, UsuarioFollow]), HttpModule, CargoModule],
   controllers: [UsuarioController],
   providers: [
     JwtStrategy,

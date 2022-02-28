@@ -7,61 +7,61 @@ export class UsuarioSocial extends BaseEntity {
   @PrimaryGeneratedColumn()
   id_usuario_social: number;
 
-  @Column()
-  seguidores: string;//JSON;
+  @Column({default: 0})
+  seguidores: number;//JSON;
 
-  @Column()
-  seguindo: string;//JSON;
+  @Column({default: 0})
+  seguindo: number;//JSON;
 
-  @Column()
+  @Column({default: ''})
   timeline_acoes: string;//JSON;
 
-  @Column()
+  @Column({default: 0})
   quizzes_concluidos: number;
 
-  @Column()
+  @Column({default: 0})
   desafios_concluidos: number;
 
-  @Column()
+  @Column({default: 0})
   cursos_concluidos: number;
 
-  @Column()
+  @Column({default: 0})
   trilhas_concluidos: number;
 
-  @Column()
+  @Column({default: ''})
   sobre: string;
 
-  @Column()
+  @Column({default: ''})
   titulo: string;
 
-  @Column({ length: 100 })
+  @Column({ default: '', length: 100 })
   github_link: string;
 
-  @Column({ length: 100 })
+  @Column({ default: '', length: 100 })
   linkedin_link: string;
 
-  @Column({ length: 100 })
+  @Column({ default: '', length: 100 })
   instagram_link: string;
 
-  @Column({ length: 100 })
+  @Column({ default: '', length: 100 })
   stackoverflow_link: string;
 
-  @Column({ length: 100 })
+  @Column({ default: '', length: 100 })
   facebook_link: string;
 
-  @Column()
+  @Column({default: ''})
   avatar: string;
 
-  @Column()
+  @Column({default: ''})
   banner: string;
 
-  @Column()
+  @Column({default: ''})
   experiencia: string;//JSON;
 
-  @Column()
+  @Column({default: ''})
   formacao: string;//JSON;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   id_usuario: number;
 
   @OneToOne(() => UsuarioV2)
