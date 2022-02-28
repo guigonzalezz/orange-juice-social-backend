@@ -16,7 +16,7 @@ class ConfigService {
       database: process.env.DB_DATABASE,
       synchronize: true,
       autoLoadEntities: true,
-      dropSchema: false,
+      dropSchema: false
     }
   }
 
