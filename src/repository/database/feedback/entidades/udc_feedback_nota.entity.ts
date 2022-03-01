@@ -5,22 +5,22 @@ export class UdcFeedbackNota extends BaseEntity {
   @PrimaryGeneratedColumn()
   id_udc: number;
 
-  @Column()
+  @Column({default: () => 'CURRENT_TIMESTAMP' })
   stamp_created: Date; 
 
-  @Column()
+  @Column({default: 0})
   nota: number;
   
-  @Column()
+  @Column({default:''})
   feedback: string;
   
-  @Column()
+  @Column({default: 0})
   id_responsavel: number;
 
-  @Column()
+  @Column({default: 0})
   id_usuario: number;
   
-  @Column()
+  @Column({default: 0})
   id_desafio: number;
 
 }

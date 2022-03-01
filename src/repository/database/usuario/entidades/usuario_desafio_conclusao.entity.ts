@@ -10,6 +10,9 @@ export class UsuarioDesafioConclusao extends BaseEntity {
   @Column()
   id_desafio: number;
 
+  @Column()
+  desafio_url: string;
+
   @Column({ length: 1 })
   concluido_SN: string;
   
