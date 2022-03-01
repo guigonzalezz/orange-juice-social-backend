@@ -7,10 +7,12 @@ import { S3 } from 'aws-sdk'
 import { UsuarioRepository } from 'src/repository/database/usuario/usuario.repository'
 import { BaseServiceGeneric, BasicResponseInterface } from '../service.generic'
 import { CargoRepository } from 'src/repository/database/cargo/cargo.repository'
+import { FeedbackRepository } from 'src/repository/database/feedback/feedback.repository'
 @Injectable()
 export class UsuarioService extends BaseServiceGeneric {
   constructor(
     private usuarioRepository: UsuarioRepository,
+    private feedbackRepository: FeedbackRepository,
     private cargoRepository: CargoRepository,
   ) { super() }
 
@@ -234,6 +236,46 @@ export class UsuarioService extends BaseServiceGeneric {
     return this.createReturn(200, 
       await this.usuarioRepository.buscaQtdSeguindoESeguidores(id_usuario_social)
     )
+  }
+
+  async concluirDesafio(data): Promise<BasicResponseInterface> {  
+    await this.usuarioRepository.concluirDesafio(data)
+    return this.createReturn(200, 'OK')
+  }
+  
+  async concluirQuiz(data): Promise<BasicResponseInterface> {  
+    await this.usuarioRepository.concluirQuiz(data)
+    await this.feedbackRepository.adicionarFeedbackENotaQuiz({
+      ...data,
+      feedback: data.feedback ? data.feedback : '',
+      id_responsavel: data.id_responsavel ? data.id_responsavel : 0
+    })
+    return this.createReturn(200, 'OK')
+  }
+  
+  async concluirTrilha(data): Promise<BasicResponseInterface> {  
+    await this.usuarioRepository.concluirTrilha(data)
+    return this.createReturn(200, 'OK')
+  }
+
+  async concluirCurso(data): Promise<BasicResponseInterface> {  
+    await this.usuarioRepository.concluirCurso(data)
+    return this.createReturn(200, 'OK')
+  }
+
+  async concluirBlogLeitura(data): Promise<BasicResponseInterface> {  
+    await this.usuarioRepository.concluirBlogLeitura(data)
+    return this.createReturn(200, 'OK')
+  }
+
+  async enviarQuizFeedbackNota(data): Promise<BasicResponseInterface> {
+    await this.feedbackRepository.enviarQuizFeedbackNota(data)
+    return this.createReturn(200, 'OK')
+  }
+
+  async enviarDesafioFeedbackNota(data): Promise<BasicResponseInterface> {
+    await this.feedbackRepository.enviarDesafioFeedbackNota(data)
+    return this.createReturn(200, 'OK')
   }
 
 }

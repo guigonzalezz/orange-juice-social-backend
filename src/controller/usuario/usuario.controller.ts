@@ -148,4 +148,53 @@ export class UsuarioController {
     if (await (result).data) response.status(result.code).send(result)
     else return response.status(result.code).send(result)
   }
+
+  @Post('concluir/desafio')
+  async concluirDesafio(@Body() data, @Res() response) {
+    const result = await this.usuarioService.concluirDesafio(data);
+    if (await (result).data) response.status(result.code).send(result)
+    else return response.status(result.code).send(result)
+  }
+
+  @Post('concluir/quiz')
+  async concluirQuiz(@Body() data, @Res() response) {
+    const result = await this.usuarioService.concluirQuiz(data);
+    if (await (result).data) response.status(result.code).send(result)
+    else return response.status(result.code).send(result)
+  }
+  
+  @Post('concluir/trilha')
+  async concluirTrilha(@Body() data, @Res() response) {
+    const result = await this.usuarioService.concluirTrilha(data);
+    if (await (result).data) response.status(result.code).send(result)
+    else return response.status(result.code).send(result)
+  }
+
+  @Post('concluir/curso')
+  async concluirCurso(@Body() data, @Res() response) {
+    const result = await this.usuarioService.concluirCurso(data);
+    if (await (result).data) response.status(result.code).send(result)
+    else return response.status(result.code).send(result)
+  }
+
+  @Post('concluir/blog')
+  async concluirBlogLeitura(@Body() data, @Res() response) {
+    const result = await this.usuarioService.concluirBlogLeitura(data);
+    if (await (result).data) response.status(result.code).send(result)
+    else return response.status(result.code).send(result)
+  }
+
+  @Post('feedback/desafio')
+  async enviarDesafioFeedbackNota(@Body() data, @Res() response) {
+    const result = await this.usuarioService.enviarDesafioFeedbackNota(data);
+    if (await (result).data) response.status(result.code).send(result)
+    else return response.status(result.code).send(result)
+  }
+
+  @Post('feedback/quiz')
+  async enviarQuizFeedbackNota(@Body() data, @Res() response) {
+    const result = await this.usuarioService.enviarQuizFeedbackNota(data);
+    if (await (result).data) response.status(result.code).send(result)
+    else return response.status(result.code).send(result)
+  }
 }

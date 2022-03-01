@@ -1,12 +1,18 @@
 import { Injectable } from '@nestjs/common';
+import { Repository, getConnection, In } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+
+//entidades
 import { UsuarioV2 } from 'src/repository/database/usuario/entidades/usuario.entity';
 import { UsuarioPerfil } from 'src/repository/database/usuario/entidades/usuario_perfil.entity';
 import { UsuarioPontuacao } from 'src/repository/database/usuario/entidades/usuario_pontuacao.entity';
 import { UsuarioSocial } from 'src/repository/database/usuario/entidades/usuario_social.entity';
-import { Repository, getConnection, In } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { CargoRepository } from '../cargo/cargo.repository';
 import { UsuarioFollow } from './entidades/usuario_follow.entity';
+import { UsuarioTrilhaConclusao } from './entidades/usuario_trilha_conclusao.entity';
+import { UsuarioQuizConclusao } from './entidades/usuario_quiz_conclusao.entity';
+import { UsuarioDesafioConclusao } from './entidades/usuario_desafio_conclusao.entity';
+import { UsuarioCursoConclusao } from './entidades/usuario_curso_conclusao.entity';
+import { UsuarioBlogLeitura } from './entidades/usuario_blog_leitura.entity';
 @Injectable()
 export class UsuarioRepository {
   constructor(
@@ -20,6 +26,16 @@ export class UsuarioRepository {
     private usuarioPontuacaoRepository: Repository<UsuarioPontuacao>,
     @InjectRepository(UsuarioFollow)
     private usuarioFollowRepository: Repository<UsuarioFollow>,
+    @InjectRepository(UsuarioTrilhaConclusao)
+    private usuarioTrilhaConclusaoRepository: Repository<UsuarioTrilhaConclusao>,
+    @InjectRepository(UsuarioQuizConclusao)
+    private usuarioQuizConclusaoRepository: Repository<UsuarioQuizConclusao>,
+    @InjectRepository(UsuarioDesafioConclusao)
+    private usuarioDesafioConclusaoRepository: Repository<UsuarioDesafioConclusao>,
+    @InjectRepository(UsuarioCursoConclusao)
+    private usuarioCursoConclusaoRepository: Repository<UsuarioCursoConclusao>,
+    @InjectRepository(UsuarioBlogLeitura)
+    private usuarioBlogLeituraRepository: Repository<UsuarioBlogLeitura>,
   ) { }
 
   async buscarUsuarioPerfilPorEmail(email_empresarial: string): Promise<UsuarioPerfil> {
@@ -66,7 +82,6 @@ export class UsuarioRepository {
     return await this.usuarioPontuacaoRepository.findOne({id_usuario})
   }
 
-  
   async cadastraUsuarioCompleto(usuario, cargo) {
     const existUsuario = await this.usuarioPerfilRepository.findOne({ where: [{ cpf: usuario.cpf }, {email_empresarial: usuario.email_empresarial}]});
     if (existUsuario) return { code: 409, error: 'Usuário já cadastrado!' }
@@ -219,5 +234,81 @@ export class UsuarioRepository {
 
   async buscaQtdSeguindoESeguidores(id_usuario_social) {
     return await this.usuarioSocialRepository.findOne({select:['seguidores', 'seguindo'], where:{id_usuario_social}})
+  }
+
+  async concluirDesafio(data) {
+    const concluido = await this.usuarioDesafioConclusaoRepository.findOne({ where: { id_desafio: data.id_desafio, id_usuario: data.id_usuario}})
+
+    if(concluido && concluido.concluido_SN == 'N') {
+      await this.usuarioDesafioConclusaoRepository.update({id_usuario_desafio_conclusao: concluido.id_usuario_desafio_conclusao},{ concluido_SN: 'S'})
+    } else if(!concluido) {
+      await this.usuarioDesafioConclusaoRepository.save({
+        id_usuario: data.id_usuario,
+        id_desafio: data.id_desafio, 
+        desafio_url: data.desafio_url,
+        concluido_SN: 'S',
+        anotacao: data.anotacao
+      })
+    }
+  }
+
+  async concluirTrilha(data) {
+    const concluido = await this.usuarioTrilhaConclusaoRepository.findOne({ where: { id_trilha: data.id_trilha, id_usuario: data.id_usuario}})
+
+    if(concluido && concluido.concluido_SN == 'N') {
+      await this.usuarioTrilhaConclusaoRepository.update({id_usuario_trilha_conclusao: concluido.id_usuario_trilha_conclusao},{ concluido_SN: 'S'})
+    } else if(!concluido) {
+      await this.usuarioTrilhaConclusaoRepository.save({
+        id_usuario: data.id_usuario,
+        id_trilha: data.id_trilha, 
+        concluido_SN: 'S',
+        anotacao: data.anotacao
+      })
+    }
+  }
+
+  async concluirCurso(data) {
+    const concluido = await this.usuarioCursoConclusaoRepository.findOne({ where: { id_curso: data.id_curso, id_usuario: data.id_usuario}})
+
+    if(concluido && concluido.concluido_SN == 'N') {
+      await this.usuarioCursoConclusaoRepository.update({id_usuario_curso_conclusao: concluido.id_usuario_curso_conclusao},{ concluido_SN: 'S'})
+    } else if(!concluido) {
+      await this.usuarioCursoConclusaoRepository.save({
+        id_usuario: data.id_usuario,
+        id_curso: data.id_curso, 
+        concluido_SN: 'S',
+        anotacao: data.anotacao
+      })
+    }
+  }
+
+  async concluirQuiz(data) {
+    const concluido = await this.usuarioQuizConclusaoRepository.findOne({ where: { id_quiz: data.id_quiz, id_usuario: data.id_usuario}})
+
+    if(concluido && concluido.concluido_SN == 'N') {
+      await this.usuarioQuizConclusaoRepository.update({id_usuario_quiz_conclusao: concluido.id_usuario_quiz_conclusao},{ concluido_SN: 'S'})
+    } else if(!concluido) {
+      await this.usuarioQuizConclusaoRepository.save({
+        id_usuario: data.id_usuario,
+        id_quiz: data.id_quiz, 
+        concluido_SN: 'S',
+        anotacao: data.anotacao
+      })
+    }
+  }
+
+  async concluirBlogLeitura(data) {
+    const concluido = await this.usuarioBlogLeituraRepository.findOne({ where: { id_blog: data.id_blog, id_usuario: data.id_usuario}})
+
+    if(concluido && concluido.concluido_SN == 'N') {
+      await this.usuarioBlogLeituraRepository.update({id_usuario_blog_leitura: concluido.id_usuario_blog_leitura},{ concluido_SN: 'S'})
+    } else if(!concluido) {
+      await this.usuarioBlogLeituraRepository.save({
+        id_usuario: data.id_usuario,
+        id_blog: data.id_blog, 
+        concluido_SN: 'S',
+        anotacao: data.anotacao
+      })
+    }
   }
 }
