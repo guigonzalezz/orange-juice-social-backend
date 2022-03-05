@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Repository, getConnection, In } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt'
 
 //entidades
 import { UsuarioV2 } from 'src/repository/database/usuario/entidades/usuario.entity';
@@ -38,16 +39,20 @@ export class UsuarioRepository {
     private usuarioBlogLeituraRepository: Repository<UsuarioBlogLeitura>,
   ) { }
 
+  async buscarInfoLoginPorEmail(email_empresarial: string): Promise<UsuarioPerfil> {
+    return await this.usuarioPerfilRepository.findOne({ where:{email_empresarial}, select: ['id_usuario', 'email_empresarial', 'senha']});
+  }
+
   async buscarUsuarioPerfilPorEmail(email_empresarial: string): Promise<UsuarioPerfil> {
-    return await this.usuarioPerfilRepository.findOne({ email_empresarial });
+    return await this.usuarioPerfilRepository.findOne({ where:{email_empresarial} });
   }
 
   async buscaUsuarioPerfilPorCpfEEmail(cpf, email_empresarial): Promise<UsuarioPerfil> {
     return await this.usuarioPerfilRepository.findOne({ where:{cpf, email_empresarial}});
   }
 
-  async buscaIdCargoPorEmailEmpresarial(email_empresarial: string): Promise<number>{
-    return (await this.usuarioRepository.findOne({ where:{ email_empresarial}, select: ['id_cargo']})).id_cargo
+  async buscaIdCargoPorIdUsuario(id_usuario: number): Promise<number>{
+    return (await this.usuarioRepository.findOne({ where:{ id_usuario}, select: ['id_cargo']})).id_cargo
   }
 
   async buscaInfoCompletaUsuarioPorId(id_usuario,cargo) {
@@ -82,6 +87,12 @@ export class UsuarioRepository {
     return await this.usuarioPontuacaoRepository.findOne({id_usuario})
   }
 
+  async atualizarSenhaUsuario(id_usuario, senha_nova) {
+    const salt = await bcrypt.genSalt();
+    const senhaCriptografada = await bcrypt.hash(senha_nova, salt);
+    await this.usuarioPerfilRepository.update({id_usuario},{senha: senhaCriptografada})
+  }
+
   async cadastraUsuarioCompleto(usuario, cargo) {
     const existUsuario = await this.usuarioPerfilRepository.findOne({ where: [{ cpf: usuario.cpf }, {email_empresarial: usuario.email_empresarial}]});
     if (existUsuario) return { code: 409, error: 'Usuário já cadastrado!' }
@@ -93,7 +104,7 @@ export class UsuarioRepository {
       id_cargo: cargo.id_cargo
     })
 
-    const usuario_perfil: UsuarioPerfil = await this.usuarioPerfilRepository.save({
+    const usuario_perfil: UsuarioPerfil =  UsuarioPerfil.create({
       nome: usuario.nome,
       email: usuario.email,
       email_empresarial: usuario.email_empresarial,
@@ -106,6 +117,7 @@ export class UsuarioRepository {
       senha: usuario.cpf,//Primeira senha será o cpf dele
       id_usuario: usuario_general.id_usuario
     })
+    await usuario_perfil.save()
 
     const usuario_social: UsuarioSocial = await this.usuarioSocialRepository.save({
       avatar: 'usuarios/avatar/default.jpg',

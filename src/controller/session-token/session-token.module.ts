@@ -9,12 +9,15 @@ import { SessionTokenController } from "./session-token.controller";
 import { SessionTokenV2 } from "src/repository/database/session-token/entidades/session-token.entity";
 import { AuthModule } from "../auth/auth.module";
 import { UsuarioModule } from "../usuario/usuario.module";
+import { CargoModule } from "../cargo/cargo.module";
+import { CargoRepository } from "src/repository/database/cargo/cargo.repository";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SessionTokenV2]), HttpModule, UsuarioModule, forwardRef(()=>AuthModule)],
+  imports: [TypeOrmModule.forFeature([SessionTokenV2]), HttpModule, UsuarioModule, CargoModule, forwardRef(()=>AuthModule)],
   controllers: [SessionTokenController],
   providers: [
     UsuarioRepository,
+    CargoRepository,
     AuthService,
     SessionTokenService,
     SessionTokenRepository,

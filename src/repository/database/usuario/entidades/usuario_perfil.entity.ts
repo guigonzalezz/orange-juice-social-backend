@@ -14,7 +14,7 @@ export class UsuarioPerfil extends BaseEntity {
   @Column({ length: 50 })
   email: string;
 
-  @Column({ length: 50 })
+  @Column({ default:"", length: 50 })
   email_empresarial: string;
 
 

@@ -197,4 +197,11 @@ export class UsuarioController {
     if (await (result).data) response.status(result.code).send(result)
     else return response.status(result.code).send(result)
   }
+
+  @Patch('alterar_senha')
+  async alterarSenha(@Body() data, @Res() response) {
+    const result = await this.usuarioService.alterarSenha(data);
+    if (await (result).data) response.status(result.code).send(result)
+    else return response.status(result.code).send(result)
+  }
 }

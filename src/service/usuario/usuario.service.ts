@@ -4,6 +4,7 @@ import { UsuarioInterface } from './interface/usuario.interface'
 import { UsuarioCadastroInterface } from './interface/usuario_cadastro.interface'
 import { UsuarioPontuacaoInterface } from './interface/usuario_pontuacao.interface'
 import { S3 } from 'aws-sdk'
+import * as bcrypt from 'bcrypt'
 import { UsuarioRepository } from 'src/repository/database/usuario/usuario.repository'
 import { BaseServiceGeneric, BasicResponseInterface } from '../service.generic'
 import { CargoRepository } from 'src/repository/database/cargo/cargo.repository'
@@ -276,6 +277,14 @@ export class UsuarioService extends BaseServiceGeneric {
   async enviarDesafioFeedbackNota(data): Promise<BasicResponseInterface> {
     await this.feedbackRepository.enviarDesafioFeedbackNota(data)
     return this.createReturn(200, 'OK')
+  }
+
+  async alterarSenha(data): Promise<BasicResponseInterface> {
+    const { email, senha_nova, senha_atual } = data
+    let usuario = await this.usuarioRepository.buscarInfoLoginPorEmail(email);
+    if(senha_nova == senha_atual || !bcrypt.compareSync(senha_atual.toString(), usuario.senha)) return this.createReturn(400, 'Senha invalida')
+    await this.usuarioRepository.atualizarSenhaUsuario(usuario.id_usuario, senha_nova.toString())
+    return this.createReturn(200, 'Senha atualizada')
   }
 
 }
