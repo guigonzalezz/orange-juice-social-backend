@@ -10,48 +10,48 @@ export class ContentfulController {
   async retornaNomeProjetoContentful(@Res() response) {
     const result = await this.contentfulService.retornaNomeProjetoContentful()
     if (await (result).data) response.status(result.code).send(result.data)
-    else return response.status(result.code).send(result)
+    else return response.status(result.code).send(result.data)
   }
 
   @Get('entries/quizzes')
-  async retornaQuizzes(@Res() response) {
-    const result = await this.contentfulService.retornaQuizzes()
+  async retornaQuizzes(@Query('cargo') cargo,@Res() response) {
+    const result = await this.contentfulService.retornaQuizzes(cargo)
     if (await (result).data) response.status(result.code).send(result.data)
-    else return response.status(result.code).send(result)
+    else return response.status(result.code).send(result.data)
   }
 
   @Get('entries/desafios')
-  async retornaDesafios(@Res() response) {
-    const result = await this.contentfulService.retornaDesafios()
+  async retornaDesafios(@Query('cargo') cargo,@Res() response) {
+    const result = await this.contentfulService.retornaDesafios(cargo)
     if (await (result).data) response.status(result.code).send(result.data)
-    else return response.status(result.code).send(result)
+    else return response.status(result.code).send(result.data)
   }
 
   @Get('entries/trilhas')
-  async retornaTrilhas(@Res() response) {
-    const result = await this.contentfulService.retornaTrilhas()
+  async retornaTrilhas(@Query('cargo') cargo,@Res() response) {
+    const result = await this.contentfulService.retornaTrilhas(cargo)
     if (await (result).data) response.status(result.code).send(result.data)
-    else return response.status(result.code).send(result)
+    else return response.status(result.code).send(result.data)
   }
 
   @Get('entries/noticias')
   async retornaNoticias(@Res() response) {
     const result = await this.contentfulService.retornaNoticias()
     if (await (result).data) response.status(result.code).send(result.data)
-    else return response.status(result.code).send(result)
+    else return response.status(result.code).send(result.data)
   }
 
   @Get('entries/eventos')
   async retornaEventos(@Res() response) {
     const result = await this.contentfulService.retornaEventos()
     if (await (result).data) response.status(result.code).send(result.data)
-    else return response.status(result.code).send(result)
+    else return response.status(result.code).send(result.data)
   }
 
   @Get('entries/blogs')
   async retornaBlogs(@Res() response) {
     const result = await this.contentfulService.retornaBlogs()
     if (await (result).data) response.status(result.code).send(result.data)
-    else return response.status(result.code).send(result)
+    else return response.status(result.code).send(result.data)
   }
 }

@@ -20,7 +20,7 @@ export class ContentfulRepository {
     return (await this.contentfulClient.getSpace()).name
   }
 
-  async retornaQuizzes() {
+  async retornaQuizzes(): Promise<Array<any>> {
     let contentfulRes: any = (await this.contentfulClient.getEntries({ content_type: 'quiz'})).items
     contentfulRes = contentfulRes.map(item => ({
       titulo: item.fields.titulo,
@@ -39,7 +39,7 @@ export class ContentfulRepository {
     return contentfulRes
   }
 
-  async retornaTrilhas() {
+  async retornaTrilhas(): Promise<Array<any>> {
     let contentfulRes: any = (await this.contentfulClient.getEntries({ content_type: 'trilha'})).items
     contentfulRes = contentfulRes.map(item => ({
       titulo: item.fields.titulo,
@@ -56,7 +56,7 @@ export class ContentfulRepository {
     return contentfulRes
   }
 
-  async retornaEventos() {
+  async retornaEventos(): Promise<Array<any>> {
     let contentfulRes: any = (await this.contentfulClient.getEntries({ content_type: 'evento'})).items
     contentfulRes = contentfulRes.map(item => ({
       titulo: item.fields.titulo,
@@ -67,7 +67,7 @@ export class ContentfulRepository {
     return contentfulRes
   }
 
-  async retornaBlogs() {
+  async retornaBlogs(): Promise<Array<any>> {
     let contentfulRes: any = (await this.contentfulClient.getEntries({ content_type: 'blog'})).items
     contentfulRes = contentfulRes.map(item => ({
       titulo: item.fields.titulo,
@@ -81,7 +81,7 @@ export class ContentfulRepository {
     return contentfulRes
   }
 
-  async retornaNoticias() {
+  async retornaNoticias(): Promise<Array<any>> {
     let contentfulRes: any = (await this.contentfulClient.getEntries({ content_type: 'noticias'})).items
     contentfulRes = contentfulRes.map(item => ({
       titulo: item.fields.titulo,
@@ -95,7 +95,7 @@ export class ContentfulRepository {
     return contentfulRes
   }
 
-  async retornaDesafios() {
+  async retornaDesafios(): Promise<Array<any>> {
     let contentfulRes: any = (await this.contentfulClient.getEntries({ content_type: 'desafio'})).items
     contentfulRes = contentfulRes.map(item => ({
       titulo: item.fields.titulo,

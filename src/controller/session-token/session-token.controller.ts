@@ -13,8 +13,8 @@ export class SessionTokenController {
   @Put('refresh')
   async refreshToken(@Body() data: RefreshTokenDto, @Res() response) {
     const result = await this.sessionTokenService.refreshToken(data.tokenAntigo);
-    if (await (result).data) response.status(result.code).send(result)
-    else return response.status(result.code).send(result)
+    if (await (result).data) response.status(result.code).send(result.data)
+    else return response.status(result.code).send(result.data)
   }
 
 
