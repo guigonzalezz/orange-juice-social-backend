@@ -54,4 +54,17 @@ export class ContentfulController {
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
+
+  @Get('entries/home')
+  async retornaHome(@Res() response) {
+    const resultBlogs = (await this.contentfulService.retornaBlogs()).data
+    const resultEventos = (await this.contentfulService.retornaEventos()).data
+    const resultNoticias = (await this.contentfulService.retornaNoticias()).data
+    response.status(200).send({
+      resultBlogs,
+      resultEventos,
+      resultNoticias
+    })
+  }
+
 }
