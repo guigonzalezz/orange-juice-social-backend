@@ -8,13 +8,13 @@ import { config } from 'aws-sdk';
 async function bootstrap() {
   const app = await NestFactory.create(MainModule);
 
-  // const cors = require('cors');
-  // const corsOptions = {
-  //   origin: "*",
-  //   credentials: true,
-  //   optionSuccessStatus:200
-  // }
-  // app.use(cors(corsOptions));
+  const cors = require('cors');
+  const corsOptions = {
+    origin: "*",
+    credentials: true,
+    optionSuccessStatus:200
+  }
+  app.use(cors(corsOptions));
 
   config.update({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -22,6 +22,6 @@ async function bootstrap() {
     region: process.env.AWS_REGION,
   });
 
-  await app.listen(3000);
+  await app.listen(8080);
 }
 bootstrap();
