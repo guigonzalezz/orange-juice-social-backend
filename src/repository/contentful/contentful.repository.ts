@@ -17,10 +17,7 @@ export class ContentfulRepository {
   }
 
   async retornaNomeProjetoContentful() {
-    return {
-      code: 200,
-      data: (await this.contentfulClient.getSpace()).name
-    }
+    return (await this.contentfulClient.getSpace()).name
   }
 
   async retornaQuizzes() {
@@ -39,10 +36,7 @@ export class ContentfulRepository {
       }))
     })) 
     
-    return {
-      code: 200,
-      data: contentfulRes
-    }
+    return contentfulRes
   }
 
   async retornaTrilhas() {
@@ -59,10 +53,7 @@ export class ContentfulRepository {
       }))
     })) 
     
-    return {
-      code: 200,
-      data: contentfulRes
-    }
+    return contentfulRes
   }
 
   async retornaEventos() {
@@ -73,10 +64,7 @@ export class ContentfulRepository {
       data: item.fields.data
     })) 
     
-    return {
-      code: 200,
-      data: contentfulRes
-    }
+    return contentfulRes
   }
 
   async retornaBlogs() {
@@ -90,10 +78,7 @@ export class ContentfulRepository {
       stampCreated: item.fields.stampCreated
     })) 
     
-    return {
-      code: 200,
-      data: contentfulRes
-    }
+    return contentfulRes
   }
 
   async retornaNoticias() {
@@ -107,10 +92,7 @@ export class ContentfulRepository {
       stampAt: item.fields.stampAt
     })) 
     
-    return {
-      code: 200,
-      data: contentfulRes
-    }
+    return contentfulRes
   }
 
   async retornaDesafios() {
@@ -123,10 +105,7 @@ export class ContentfulRepository {
       cargo: item.fields.cargo,
       imagem: item.fields.imagem.fields.file.url
     }))
-    return {
-      code: 200,
-      data: contentfulRes
-    }
+    return contentfulRes
   }
   
 
