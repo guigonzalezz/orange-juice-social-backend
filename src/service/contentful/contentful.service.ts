@@ -13,8 +13,8 @@ export class ContentfulService extends BaseServiceGeneric {
   }
 
   async retornaQuizzes(cargo): Promise<BasicResponseInterface> {
+    if(cargo == 'admin') return this.createReturn(200, await this.contentfulRepository.retornaQuizzes())
     const res = await this.contentfulRepository.retornaQuizzes()
-
     return this.createReturn(200, res.filter(item => {
       for(let i = 0; i < item.cargo.length; i++){
         if(item.cargo[i].includes(cargo)) return true
@@ -23,6 +23,7 @@ export class ContentfulService extends BaseServiceGeneric {
   }
 
   async retornaTrilhas(cargo): Promise<BasicResponseInterface> {
+    if(cargo == 'admin') return this.createReturn(200, await this.contentfulRepository.retornaTrilhas())
     const res = await this.contentfulRepository.retornaTrilhas()
     return this.createReturn(200, res.filter(item => {
       for(let i = 0; i < item.cargo.length; i++){
@@ -32,6 +33,7 @@ export class ContentfulService extends BaseServiceGeneric {
   }
   
   async retornaDesafios(cargo): Promise<BasicResponseInterface> {
+    if(cargo == 'admin') return this.createReturn(200, await this.contentfulRepository.retornaDesafios())
     const res = await this.contentfulRepository.retornaDesafios()
     return this.createReturn(200, res.filter(item=> item.cargo.includes(cargo)))
   }
