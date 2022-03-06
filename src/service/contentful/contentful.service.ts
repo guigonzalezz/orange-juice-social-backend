@@ -12,14 +12,30 @@ export class ContentfulService extends BaseServiceGeneric {
     return this.createReturn(200, await this.contentfulRepository.retornaNomeProjetoContentful())
   }
 
-  async retornaQuizzes(): Promise<BasicResponseInterface> {
-    return this.createReturn(200, await this.contentfulRepository.retornaQuizzes())
+  async retornaQuizzes(cargo): Promise<BasicResponseInterface> {
+    const res = await this.contentfulRepository.retornaQuizzes()
+
+    return this.createReturn(200, res.filter(item => {
+      for(let i = 0; i < item.cargo.length; i++){
+        if(item.cargo[i].includes(cargo)) return true
+      }
+    }))
   }
 
-  async retornaTrilhas(): Promise<BasicResponseInterface> {
-    return this.createReturn(200, await this.contentfulRepository.retornaTrilhas())
+  async retornaTrilhas(cargo): Promise<BasicResponseInterface> {
+    const res = await this.contentfulRepository.retornaTrilhas()
+    return this.createReturn(200, res.filter(item => {
+      for(let i = 0; i < item.cargo.length; i++){
+        if(item.cargo[i].includes(cargo)) return true
+      }
+    }))
   }
   
+  async retornaDesafios(cargo): Promise<BasicResponseInterface> {
+    const res = await this.contentfulRepository.retornaDesafios()
+    return this.createReturn(200, res.filter(item=> item.cargo.includes(cargo)))
+  }
+
   async retornaEventos(): Promise<BasicResponseInterface> {
     return this.createReturn(200, await this.contentfulRepository.retornaEventos())
   }
@@ -32,8 +48,5 @@ export class ContentfulService extends BaseServiceGeneric {
     return this.createReturn(200, await this.contentfulRepository.retornaNoticias())
   }
 
-  async retornaDesafios(): Promise<BasicResponseInterface> {
-    return this.createReturn(200, await this.contentfulRepository.retornaDesafios())
-  }
 
 }
