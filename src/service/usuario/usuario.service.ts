@@ -287,4 +287,11 @@ export class UsuarioService extends BaseServiceGeneric {
     return this.createReturn(200, 'Senha atualizada')
   }
 
+  async alterarSenhaNova(data): Promise<BasicResponseInterface> {
+    const { email, senha_nova } = data
+    let usuario = await this.usuarioRepository.buscarInfoLoginPorEmail(email);
+    await this.usuarioRepository.atualizarSenhaUsuario(usuario.id_usuario, senha_nova.toString())
+    return this.createReturn(200, 'Senha atualizada')
+  }
+
 }

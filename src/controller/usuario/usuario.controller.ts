@@ -198,10 +198,27 @@ export class UsuarioController {
     else return response.status(result.code).send(result)
   }
 
+  @Get('recuperacao_senha')
+  async recuperarSenha(@Query('email') email: string, @Res() response) {
+    //const result = await this.usuarioService.alterarSenha(data);
+    // if (await (result).data) response.status(result.code).send(result)
+    // else return response.status(result.code).send(result)
+    //Envia o email pro paciente e retorna o codigo para o front, nao registra o codigo em nenhum
+    //lugar, apenas retorna para realizar a comunicacao
+    return response.status(200).send("code")
+  }
+
   @Patch('alterar_senha')
   async alterarSenha(@Body() data, @Res() response) {
     const result = await this.usuarioService.alterarSenha(data);
-    if (await (result).data) response.status(result.code).send(result)
+    if (await (result).data) response.status(result.code).send(result.data)
+    else return response.status(result.code).send(result)
+  }
+
+  @Patch('alterar_senha_nova')
+  async alterarSenhaNova(@Body() data, @Res() response) {
+    const result = await this.usuarioService.alterarSenhaNova(data);
+    if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result)
   }
 }

@@ -18,7 +18,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     if (user == 'Usuario não encontrado!' || user == 'Senha incorreta!') {
       return {
         code:401,
-        error: user
+        error: "Acesso invalido!"
       }
     }
     return user;
