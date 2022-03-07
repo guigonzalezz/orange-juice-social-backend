@@ -62,6 +62,8 @@ export class UsuarioService extends BaseServiceGeneric {
       social: await this.usuarioRepository.buscaUsuarioSocialPorId({ id_usuario }),
       perfil: await this.usuarioRepository.buscaUsuarioPerfilPorId(id_usuario),
       feedback: null,
+      avatar_link: (await this.getAvatar(usuario.id_usuario)).data,
+      banner_link: (await this.getBanner(usuario.id_usuario)).data,
     })
   }
 
