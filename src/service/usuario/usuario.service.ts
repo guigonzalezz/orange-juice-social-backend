@@ -39,6 +39,9 @@ export class UsuarioService extends BaseServiceGeneric {
         item.cargo = await this.cargoRepository.buscaCargoPeloId(item.id_cargo)
         item.perfil = await this.usuarioRepository.buscaUsuarioPerfilPorId(item.id_usuario)
         item.pontos = await this.usuarioRepository.buscaUsuarioPontuacaoPorId(item.id_usuario)
+        item.feedback = null
+        item.avatar_link = (await this.getAvatar(item.id_usuario)).data
+        item.banner_link = (await this.getBanner(item.id_usuario)).data
       })
     )
     return this.createReturn(200, usuarios)
