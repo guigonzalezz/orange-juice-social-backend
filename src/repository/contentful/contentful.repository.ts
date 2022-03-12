@@ -61,7 +61,8 @@ export class ContentfulRepository {
     contentfulRes = contentfulRes.map(item => ({
       titulo: item.fields.titulo,
       descricao: item.fields.descricao,
-      data: item.fields.data
+      data: item.fields.data,
+      link: item.fields.link
     })) 
     
     return contentfulRes
