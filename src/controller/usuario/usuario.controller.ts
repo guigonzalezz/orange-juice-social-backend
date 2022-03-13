@@ -70,6 +70,13 @@ export class UsuarioController {
     else return response.status(result.code).send(result.data)
   }
 
+  @Delete('deletar_varios')
+  async deletarVariosUsuario(@Query('ids') ids: string, @Res() response) {
+    const result = await this.usuarioService.deletarVariosUsuario(ids);
+    if (await (result).data) response.status(result.code).send(result.data)
+    else return response.status(result.code).send(result.data)
+  }
+
   @Post('avatar/adicionar/:id')
   @UseInterceptors(FileInterceptor('file'))
   async addAvatar(@Param('id') id: number, @UploadedFile() file, @Res() response) {

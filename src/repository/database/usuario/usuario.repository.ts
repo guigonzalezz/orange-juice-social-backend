@@ -167,6 +167,17 @@ export class UsuarioRepository {
     }
   }
   
+  async deletarVariosUsuario(ids: string) {
+    const ids_array = ids.split(",")
+    ids_array.map(async id => {
+      await this.usuarioSocialRepository.delete({ id_usuario: parseInt(id) })
+      await this.usuarioPerfilRepository.delete({ id_usuario: parseInt(id) })
+      await this.usuarioPontuacaoRepository.delete({ id_usuario: parseInt(id) })
+      await this.usuarioRepository.delete({ id_usuario: parseInt(id) })
+    })
+    return true
+  }
+
   async toggleAtivoOuInativo(usuario) {
     await getConnection()
       .createQueryBuilder()

@@ -99,6 +99,12 @@ export class UsuarioService extends BaseServiceGeneric {
     const res = await this.usuarioRepository.deletarUsuario(id_usuario)
     return this.createReturn(res ? 204:404, res? true: "Usuario não encontrado!")
   }
+
+  async deletarVariosUsuario(ids: string): Promise<BasicResponseInterface> {
+    if (ids = '') return this.createReturn(500, "Passe o parametro corretamente!");
+    const res = await this.usuarioRepository.deletarVariosUsuario(ids)
+    return this.createReturn(res ? 204:404, res? true: "Erro ao deletar usuarios!")
+  }
   
   async toggleAtivoOuInativo(id_usuario: number): Promise<BasicResponseInterface> {
     const usuario = await this.usuarioRepository.buscaUsuarioPorId(id_usuario);
