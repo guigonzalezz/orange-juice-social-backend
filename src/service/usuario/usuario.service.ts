@@ -70,6 +70,12 @@ export class UsuarioService extends BaseServiceGeneric {
     })
   }
 
+  async carregarCargoUsuario(id_usuario: number): Promise<BasicResponseInterface> {
+    const usuario: UsuarioInterface = await this.usuarioRepository.buscaUsuarioPorId(id_usuario);
+    if (!usuario) return this.createReturn(404,"Usuario não encontrado!")
+    return this.createReturn(200, await this.cargoRepository.buscaCargoPeloId(usuario.id_cargo))
+  }
+
   async carregarInfoSocial(id_usuario: number): Promise<BasicResponseInterface> {
     const usuario = await this.usuarioRepository.buscaUsuarioSocialPorId(id_usuario);
     if (!usuario) return this.createReturn(404, "Usuario não encontrado!")

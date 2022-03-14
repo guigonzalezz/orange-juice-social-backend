@@ -28,6 +28,13 @@ export class UsuarioController {
     else return response.status(result.code).send(result.data)
   }
 
+  @Get('buscarCargo')
+  async carregarCargoUsuario(@Query('id_usuario') id: number, @Res() response) {
+    const result = await this.usuarioService.carregarCargoUsuario(id);
+    if (await (result).data) response.status(result.code).send(result.data)
+    else return response.status(result.code).send(result.data)
+  }
+
   @Get('buscarSocial')
   async carregarInfoUsuarioSocial(@Query('id_usuario') id: number, @Res() response) {
     const result = await this.usuarioService.carregarInfoSocial(id);
@@ -77,7 +84,7 @@ export class UsuarioController {
     else return response.status(result.code).send(result.data)
   }
 
-  @Delete('deletar_varios')
+  @Delete('deletarVarios')
   async deletarVariosUsuario(@Query('ids') ids: string, @Res() response) {
     const result = await this.usuarioService.deletarVariosUsuario(ids);
     if (await (result).data) response.status(result.code).send(result.data)
