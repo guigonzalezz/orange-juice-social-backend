@@ -88,6 +88,12 @@ export class UsuarioService extends BaseServiceGeneric {
     return this.createReturn(200,usuario)
   }
 
+  async atualizarUsuarioCargo(id_usuario: number, id_cargo: number): Promise<BasicResponseInterface> {
+    if (!await this.usuarioRepository.buscaUsuarioPorId(id_usuario)) return this.createReturn(404, 'Usuario não existe!');
+    const usuario = await this.usuarioRepository.atualizarUsuarioCargo(id_usuario , id_cargo);
+    return this.createReturn(200,usuario)
+  }
+
   async atualizarUsuarioSocial(id_usuario: number, data): Promise<BasicResponseInterface> {
     if (!await this.usuarioRepository.buscaUsuarioPorId(id_usuario)) return this.createReturn(404, 'Usuario não existe!');
     const usuario = await this.usuarioRepository.atualizarUsuarioSocial(id_usuario , data);

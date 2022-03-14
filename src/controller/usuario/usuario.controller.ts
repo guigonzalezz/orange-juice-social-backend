@@ -56,6 +56,13 @@ export class UsuarioController {
     else return response.status(result.code).send(result.data)
   }
 
+  @Patch('atualizarCargo/:id')
+  async atualizarUsuarioCargo(@Param('id') id: number, @Query('id_cargo') id_cargo, @Res() response) {
+    const result = await this.usuarioService.atualizarUsuarioCargo(id, id_cargo);
+    if (await (result).data) response.status(result.code).send(result.data)
+    else return response.status(result.code).send(result.data)
+  }
+
   @Patch('atualizarSocial/:id')
   async atualizarUsuarioSocial(@Param('id') id: number, @Body() data, @Res() response) {
     const result = await this.usuarioService.atualizarUsuarioSocial(id, data);

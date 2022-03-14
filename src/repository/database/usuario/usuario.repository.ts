@@ -150,6 +150,11 @@ export class UsuarioRepository {
     return await this.usuarioPerfilRepository.findOne({ id_usuario })
   }
 
+  async atualizarUsuarioCargo(id_usuario: number, id_cargo: number) {
+    await this.usuarioRepository.update({ id_usuario }, { id_cargo });
+    return await this.usuarioRepository.findOne({ id_usuario })
+  }
+
   async atualizarUsuarioSocial(id_usuario: number, data) {
     await this.usuarioSocialRepository.update({ id_usuario }, data);
     return await this.usuarioSocialRepository.findOne({ id_usuario })
