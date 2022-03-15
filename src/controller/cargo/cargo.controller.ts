@@ -27,6 +27,13 @@ export class CargoController {
     else return response.status(result.code).send(result.data);
   }
 
+  @Patch('toggleAtivoInativo')
+  async toggleAtivarOuInativar(@Query('id_cargo') id: number, @Res() response) {
+    const result = await this.cargoService.toggleAtivoOuInativo(id);
+    if (await (result).data) response.status(result.code).send(result.data)
+    else return response.status(result.code).send(result.data)
+  }
+
   @Get('buscarNome')
   async carregarCargoPeloNome(@Query('nome') nome: string, @Res() response) {
     const result = await this.cargoService.findByNome(nome)

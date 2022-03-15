@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 import { CargoV2 } from './entidades/cargo.entity';
 
 @Injectable()
@@ -24,6 +24,17 @@ export class CargoRepository {
 
   async cadastrarCargo(cargo) {
       return await this.cargoRepository.save(cargo)
+  }
+
+  async toggleAtivoOuInativo(cargo) {
+    await getConnection()
+      .createQueryBuilder()
+      .update(CargoV2)
+      .set({ ativo_SN: cargo.ativo_SN == 'S' ? 'N' : 'S' })
+      .where("id_cargo = :id", { id: cargo.id_cargo })
+      .execute();
+
+    return true
   }
 
   async atualizar(id_cargo: number, data) {

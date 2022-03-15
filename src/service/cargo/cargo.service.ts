@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CargoRepository } from 'src/repository/database/cargo/cargo.repository';
+import { UsuarioRepository } from 'src/repository/database/usuario/usuario.repository';
 import { BaseServiceGeneric, BasicResponseInterface } from '../service.generic';
 
 @Injectable()
@@ -9,7 +10,7 @@ export class CargoService extends BaseServiceGeneric{
   ) { super() }
 
   async carregarTodos(): Promise<BasicResponseInterface>  {
-    let cargos: any = (await this.cargoRepository.buscaTodosCargos()).filter(cargo => cargo.nome != 'admin');
+    let cargos: any = (await this.cargoRepository.buscaTodosCargos()).filter(cargo => cargo.nome != 'admin' && cargo.ativo_SN == 'S');
     if (!cargos) return this.createReturn(204, "Não foi encontrado registros!")
     return this.createReturn(200, cargos)
   }
@@ -25,6 +26,12 @@ export class CargoService extends BaseServiceGeneric{
     const cargo = await this.cargoRepository.buscaCargoPeloNome(nome)
     if (!cargo) return this.createReturn(404,"Cargo não encontrado!")
     return this.createReturn(200, cargo)
+  }
+
+  async toggleAtivoOuInativo(id_cargo: number): Promise<BasicResponseInterface> {
+    const cargo = await this.cargoRepository.buscaCargoPeloId(id_cargo);
+    if (!cargo) return this.createReturn(404, "Cargo não encontrado!");
+    return this.createReturn(200, await this.cargoRepository.toggleAtivoOuInativo(cargo))
   }
 
   async findById(id_cargo: number): Promise<BasicResponseInterface> {

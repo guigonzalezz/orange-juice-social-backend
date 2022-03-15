@@ -8,4 +8,8 @@ export class CargoV2 extends BaseEntity {
 
   @Column({ length: 90 })
   nome: string;
+
+  @Column({ length: 1, default: 'S' })
+  ativo_SN: string;
+
 }
