@@ -35,6 +35,13 @@ export class UsuarioController {
     else return response.status(result.code).send(result.data)
   }
 
+  @Get('verificaCargoEmUso')
+  async verificaSeCargoEstaEmUsoParaDelecao(@Query('id_cargo') id: number, @Res() response) {
+    const result = await this.usuarioService.verificaSeCargoEstaEmUsoParaDelecao(id);
+    if (await (result).data) response.status(result.code).send(result.data)
+    else return response.status(result.code).send(result.data)
+  }
+
   @Get('buscarSocial')
   async carregarInfoUsuarioSocial(@Query('id_usuario') id: number, @Res() response) {
     const result = await this.usuarioService.carregarInfoSocial(id);

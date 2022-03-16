@@ -75,6 +75,10 @@ export class UsuarioRepository {
     return await this.usuarioRepository.findOne({id_usuario})
   }
 
+  async buscaUsuarioPorCargoId(id_cargo) {
+    return await this.usuarioRepository.findOne({id_cargo})
+  }
+
   async buscaUsuarioSocialPorId(id_usuario) {
     return await this.usuarioSocialRepository.findOne({id_usuario})
   }

@@ -76,6 +76,12 @@ export class UsuarioService extends BaseServiceGeneric {
     return this.createReturn(200, await this.cargoRepository.buscaCargoPeloId(usuario.id_cargo))
   }
 
+  async verificaSeCargoEstaEmUsoParaDelecao(id_cargo: number): Promise<BasicResponseInterface> {
+    const usuario: UsuarioInterface = await this.usuarioRepository.buscaUsuarioPorCargoId(id_cargo);
+    if (usuario) return this.createReturn(400,"Cargo esta sendo utilizado!")
+    else return this.createReturn(200,"Cargo pode ser deletado")
+  }
+
   async carregarInfoSocial(id_usuario: number): Promise<BasicResponseInterface> {
     const usuario = await this.usuarioRepository.buscaUsuarioSocialPorId(id_usuario);
     if (!usuario) return this.createReturn(404, "Usuario não encontrado!")
