@@ -9,8 +9,14 @@ export class CargoService extends BaseServiceGeneric{
     private cargoRepository: CargoRepository,
   ) { super() }
 
-  async carregarTodos(): Promise<BasicResponseInterface>  {
+  async carregarTodosAtivosSemAdmin(): Promise<BasicResponseInterface>  {
     let cargos: any = (await this.cargoRepository.buscaTodosCargos()).filter(cargo => cargo.nome != 'admin' && cargo.ativo_SN == 'S');
+    if (!cargos) return this.createReturn(204, "Não foi encontrado registros!")
+    return this.createReturn(200, cargos)
+  }
+
+  async carregarTodosSemAdmin(): Promise<BasicResponseInterface>  {
+    let cargos: any = (await this.cargoRepository.buscaTodosCargos()).filter(cargo => cargo.nome != 'admin');
     if (!cargos) return this.createReturn(204, "Não foi encontrado registros!")
     return this.createReturn(200, cargos)
   }

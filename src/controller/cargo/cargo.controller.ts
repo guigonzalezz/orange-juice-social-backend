@@ -8,7 +8,14 @@ export class CargoController {
 
   @Get('listar')
   async listar(@Res() response) {
-    const result = await this.cargoService.carregarTodos()
+    const result = await this.cargoService.carregarTodosAtivosSemAdmin()
+    if (await (result).data) response.status(result.code).send(result.data)
+    else return response.status(result.code).send(result.data)
+  }
+
+  @Get('listarTodos')
+  async listarTodos(@Res() response) {
+    const result = await this.cargoService.carregarTodosSemAdmin()
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
