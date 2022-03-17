@@ -74,4 +74,12 @@ export class FeedbackRepository {
       id_responsavel: data.id_responsavel,
     })
   }
+
+  async carregarFeedbackDesafiosEnviados(){
+    return await this.udcFeedbackRepository.find()
+  } 
+
+  async carregarFeedbackQuizzesEnviados(){
+    return await this.uqcFeedbackRepository.find()
+  }
 }

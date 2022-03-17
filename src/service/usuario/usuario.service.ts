@@ -47,7 +47,6 @@ export class UsuarioService extends BaseServiceGeneric {
     return this.createReturn(200, usuarios)
   }
 
-
   async carregarInfoUsuario(id_usuario: number): Promise<BasicResponseInterface> {
     const usuario: UsuarioInterface = await this.usuarioRepository.buscaUsuarioPorId(id_usuario);
     if (!usuario) return this.createReturn(404,"Usuario não encontrado!")
@@ -323,4 +322,27 @@ export class UsuarioService extends BaseServiceGeneric {
     return this.createReturn(200, 'Senha atualizada')
   }
 
+  async carregarDesafiosEnviadosComFeedbacks(): Promise<BasicResponseInterface>{
+    let desafiosEnviados: any = await this.usuarioRepository.carregarDesafiosEnviados()
+    const feedbacks = await this.feedbackRepository.carregarFeedbackDesafiosEnviados()
+    desafiosEnviados = desafiosEnviados.map(desafio => {
+      return {
+        ...desafio,
+        feedback: feedbacks.filter(elem => elem.id_desafio ==  desafio.id_desafio)
+      }
+    })
+    return this.createReturn(200, desafiosEnviados)
+  }
+
+  async carregarQuizzesEnviadosComFeedbacks(): Promise<BasicResponseInterface>{
+    let quizzesEnviados: any = await this.usuarioRepository.carregarQuizzesEnviados()
+    const feedbacks = await this.feedbackRepository.carregarFeedbackQuizzesEnviados()
+    quizzesEnviados = quizzesEnviados.map(quiz => {
+      return {
+        ...quiz,
+        feedback: feedbacks.filter(elem => elem.id_quiz ==  quiz.id_quiz)
+      }
+    })
+    return this.createReturn(200, quizzesEnviados)
+  }
 }

@@ -343,4 +343,13 @@ export class UsuarioRepository {
       })
     }
   }
+
+  async carregarDesafiosEnviados(){
+    return await this.usuarioDesafioConclusaoRepository.find()
+  }
+
+  async carregarQuizzesEnviados(){
+    return await this.usuarioQuizConclusaoRepository.find()
+  }
+  
 }

@@ -149,28 +149,28 @@ export class UsuarioController {
     else return response.status(result.code).send(result.data)
   }
 
-  @Post('deixar_de_seguir')
+  @Post('deixarDeSeguir')
   async deixarDeSeguir(@Query('seguidor') id_seguidor: number, @Query('seguido') id_seguido: number, @Res() response) {
     const result = await this.usuarioService.deixarDeSeguir(id_seguidor, id_seguido);
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
 
-  @Get('listar_seguidores')
+  @Get('listarSeguidores')
   async listarSeguidores(@Query('id_usuario_social') id: number, @Res() response) {
     const result = await this.usuarioService.listarSeguidores(id);
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
 
-  @Get('listar_quem_sigo')
+  @Get('listarQuemSigo')
   async listarQuemSigo(@Query('id_usuario_social') id: number, @Res() response) {
     const result = await this.usuarioService.listarQuemSigo(id);
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
 
-  @Get('qtd_seguindo_e_seguidores')
+  @Get('qtdSeguindoESeguidores')
   async quantosSeguindoESeguidores(@Query('id_usuario_social') id: number, @Res() response) {
     const result = await this.usuarioService.quantosSeguindoESeguidores(id);
     if (await (result).data) response.status(result.code).send(result.data)
@@ -226,7 +226,7 @@ export class UsuarioController {
     else return response.status(result.code).send(result.data)
   }
 
-  @Get('recuperacao_senha')
+  @Get('recuperacaoSenha')
   async recuperarSenha(@Query('email') email: string, @Res() response) {
     //const result = await this.usuarioService.alterarSenha(data);
     // if (await (result).data) response.status(result.code).send(result.data)
@@ -236,16 +236,30 @@ export class UsuarioController {
     return response.status(200).send("code")
   }
 
-  @Patch('alterar_senha')
+  @Patch('alterarSenha')
   async alterarSenha(@Body() data, @Res() response) {
     const result = await this.usuarioService.alterarSenha(data);
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
 
-  @Patch('alterar_senha_nova')
+  @Patch('alterarSenhaNova')
   async alterarSenhaNova(@Body() data, @Res() response) {
     const result = await this.usuarioService.alterarSenhaNova(data);
+    if (await (result).data) response.status(result.code).send(result.data)
+    else return response.status(result.code).send(result.data)
+  }
+
+  @Get('desafios')
+  async carregarDesafios(@Res() response) {
+    const result = await this.usuarioService.carregarDesafiosEnviadosComFeedbacks();
+    if (await (result).data) response.status(result.code).send(result.data)
+    else return response.status(result.code).send(result.data)
+  }
+
+  @Get('quizzes')
+  async carregarQuizzes(@Res() response) {
+    const result = await this.usuarioService.carregarQuizzesEnviadosComFeedbacks();
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
