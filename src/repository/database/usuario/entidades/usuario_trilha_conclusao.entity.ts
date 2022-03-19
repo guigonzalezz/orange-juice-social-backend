@@ -8,7 +8,7 @@ export class UsuarioTrilhaConclusao extends BaseEntity {
   id_usuario: number;
 
   @Column()
-  id_trilha: number;
+  trilha_nome: string;
 
   @Column({ length: 1 })
   concluido_SN: string;

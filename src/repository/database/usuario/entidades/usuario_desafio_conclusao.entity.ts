@@ -8,13 +8,19 @@ export class UsuarioDesafioConclusao extends BaseEntity {
   id_usuario: number;
 
   @Column()
-  id_desafio: number;
+  desafio_nome: string;
 
   @Column()
   desafio_url: string;
 
+  @Column({ default: ''})
+  categoria: string;
+
+  @Column({default: () => 'CURRENT_TIMESTAMP' })
+  stamp_enviado: Date;
+
   @Column({ length: 1 })
-  concluido_SN: string;
+  feedback_recebido_SN: string;
   
   @Column()
   anotacao: string;

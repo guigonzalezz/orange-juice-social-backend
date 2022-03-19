@@ -8,10 +8,10 @@ export class UsuarioQuizConclusao extends BaseEntity {
   id_usuario: number;
 
   @Column()
-  id_quiz: number;
+  quiz_nome: string;
 
   @Column({ length: 1 })
-  concluido_SN: string;
+  feedback_recebido_sn: string;
   
   @Column()
   anotacao: string;

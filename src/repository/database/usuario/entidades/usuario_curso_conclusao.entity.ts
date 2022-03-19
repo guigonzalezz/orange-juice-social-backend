@@ -8,7 +8,7 @@ export class UsuarioCursoConclusao extends BaseEntity {
   id_usuario: number;
 
   @Column()
-  id_curso: number;
+  curso_nome: string;
 
   @Column({ length: 1 })
   concluido_SN: string;
