@@ -87,6 +87,10 @@ export class UsuarioRepository {
     return await this.usuarioPerfilRepository.findOne({id_usuario})
   }
 
+  async buscaUsuarioPerfilNomeEEmailEmpresarialPorId(id_usuario) {
+    return await this.usuarioPerfilRepository.findOne({where:{id_usuario}, select:['nome','email_empresarial']})
+  }
+
   async buscaUsuarioPontuacaoPorId(id_usuario) {
     return await this.usuarioPontuacaoRepository.findOne({id_usuario})
   }
@@ -269,17 +273,24 @@ export class UsuarioRepository {
   }
 
   async concluirDesafio(data) {
-    const concluido = await this.usuarioDesafioConclusaoRepository.findOne({ where: { id_desafio: data.id_desafio, id_usuario: data.id_usuario}})
+    const concluido = await this.usuarioDesafioConclusaoRepository.findOne({ where: { desafio_nome: data.desafio_nome, id_usuario: data.id_usuario}})
 
-    if(concluido && concluido.concluido_SN == 'N') {
-      await this.usuarioDesafioConclusaoRepository.update({id_usuario_desafio_conclusao: concluido.id_usuario_desafio_conclusao},{ concluido_SN: 'S'})
+    if(concluido) {
+      await this.usuarioDesafioConclusaoRepository.update({id_usuario_desafio_conclusao: concluido.id_usuario_desafio_conclusao},{ 
+        desafio_url: data.desafio_url,
+        anotacao: data.anotacao,
+        stamp_enviado: new Date(),
+        feedback_recebido_SN: 'N'
+      })
     } else if(!concluido) {
       await this.usuarioDesafioConclusaoRepository.save({
         id_usuario: data.id_usuario,
-        id_desafio: data.id_desafio, 
+        desafio_nome: data.desafio_nome, 
         desafio_url: data.desafio_url,
-        concluido_SN: 'S',
-        anotacao: data.anotacao
+        anotacao: data.anotacao,
+        categoria: data.categoria,
+        stamp_enviado: new Date(),
+        feedback_recebido_SN: 'N'
       })
     }
   }
@@ -317,13 +328,14 @@ export class UsuarioRepository {
   async concluirQuiz(data) {
     const concluido = await this.usuarioQuizConclusaoRepository.findOne({ where: { id_quiz: data.id_quiz, id_usuario: data.id_usuario}})
 
-    if(concluido && concluido.concluido_SN == 'N') {
-      await this.usuarioQuizConclusaoRepository.update({id_usuario_quiz_conclusao: concluido.id_usuario_quiz_conclusao},{ concluido_SN: 'S'})
+    if(concluido) {
+      await this.usuarioQuizConclusaoRepository.update({id_usuario_quiz_conclusao: concluido.id_usuario_quiz_conclusao},{ 
+
+      })
     } else if(!concluido) {
       await this.usuarioQuizConclusaoRepository.save({
         id_usuario: data.id_usuario,
-        id_quiz: data.id_quiz, 
-        concluido_SN: 'S',
+        quiz_nome: data.quiz_nome, 
         anotacao: data.anotacao
       })
     }
@@ -350,6 +362,14 @@ export class UsuarioRepository {
 
   async carregarQuizzesEnviados(){
     return await this.usuarioQuizConclusaoRepository.find()
+  }
+
+  async feedbackDesafioEnviado(id_usuario_desafio_conclusao) {
+    return await this.usuarioDesafioConclusaoRepository.update({id_usuario_desafio_conclusao},{feedback_recebido_SN:'S'})
+  }
+
+  async feedbackQuizEnviado(id_usuario_quiz_conclusao) {
+    return await this.usuarioQuizConclusaoRepository.update({id_usuario_quiz_conclusao},{feedback_recebido_sn:'S'})
   }
   
 }

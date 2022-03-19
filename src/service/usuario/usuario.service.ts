@@ -299,11 +299,13 @@ export class UsuarioService extends BaseServiceGeneric {
 
   async enviarQuizFeedbackNota(data): Promise<BasicResponseInterface> {
     await this.feedbackRepository.enviarQuizFeedbackNota(data)
+    await this.usuarioRepository.feedbackQuizEnviado(data.id_quiz)
     return this.createReturn(200, 'OK')
   }
 
   async enviarDesafioFeedbackNota(data): Promise<BasicResponseInterface> {
     await this.feedbackRepository.enviarDesafioFeedbackNota(data)
+    await this.usuarioRepository.feedbackDesafioEnviado(data.id_desafio)
     return this.createReturn(200, 'OK')
   }
 
@@ -325,21 +327,26 @@ export class UsuarioService extends BaseServiceGeneric {
   async carregarDesafiosEnviadosComFeedbacks(): Promise<BasicResponseInterface>{
     let desafiosEnviados: any = await this.usuarioRepository.carregarDesafiosEnviados()
     const feedbacks = await this.feedbackRepository.carregarFeedbackDesafiosEnviados()
-    desafiosEnviados = desafiosEnviados.map(desafio => {
-      return {
+    const retorno = []
+    for (const desafio of desafiosEnviados) {
+      retorno.push({
         ...desafio,
-        feedback: feedbacks.filter(elem => elem.id_desafio ==  desafio.id_desafio)
-      }
-    })
-    return this.createReturn(200, desafiosEnviados)
+        usuario: await this.usuarioRepository.buscaUsuarioPerfilNomeEEmailEmpresarialPorId(desafio.id_usuario),
+        feedback: feedbacks.filter(elem => elem.id_desafio ==  desafio.id_usuario_desafio_conclusao).sort((a,b)=>{
+          return a.id_udc < b.id_udc ? 1 : a.id_udc > b.id_udc ? -1 : 0
+        })[0]
+      })
+    }
+    return this.createReturn(200, retorno)
   }
 
   async carregarQuizzesEnviadosComFeedbacks(): Promise<BasicResponseInterface>{
     let quizzesEnviados: any = await this.usuarioRepository.carregarQuizzesEnviados()
     const feedbacks = await this.feedbackRepository.carregarFeedbackQuizzesEnviados()
-    quizzesEnviados = quizzesEnviados.map(quiz => {
+    quizzesEnviados = quizzesEnviados.map(async quiz => {
       return {
         ...quiz,
+        usuario: await this.usuarioRepository.buscaUsuarioPerfilNomeEEmailEmpresarialPorId(quiz.id_usuario),
         feedback: feedbacks.filter(elem => elem.id_quiz ==  quiz.id_quiz)
       }
     })
