@@ -28,56 +28,56 @@ export class UsuarioController {
     else return response.status(result.code).send(result.data)
   }
 
-  @Get('buscarCargo')
+  @Get('buscar_cargo')
   async carregarCargoUsuario(@Query('id_usuario') id: number, @Res() response) {
     const result = await this.usuarioService.carregarCargoUsuario(id);
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
 
-  @Get('verificaCargoEmUso')
+  @Get('verifica_cargo_em_uso')
   async verificaSeCargoEstaEmUsoParaDelecao(@Query('id_cargo') id: number, @Res() response) {
     const result = await this.usuarioService.verificaSeCargoEstaEmUsoParaDelecao(id);
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
 
-  @Get('buscarSocial')
+  @Get('buscar_social')
   async carregarInfoUsuarioSocial(@Query('id_usuario') id: number, @Res() response) {
     const result = await this.usuarioService.carregarInfoSocial(id);
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
 
-  @Get('buscarPerfil')
+  @Get('buscar_perfil')
   async carregarInfoUsuarioPerfill(@Query('id_usuario') id: number, @Res() response) {
     const result = await this.usuarioService.carregarInfoPerfil(id);
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
 
-  @Patch('toggleAtivoInativo')
+  @Patch('toggle_ativo_inativo')
   async toggleAtivarOuInativar(@Query('id_usuario') id: number, @Res() response) {
     const result = await this.usuarioService.toggleAtivoOuInativo(id);
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
 
-  @Patch('atualizarPerfil/:id')
+  @Patch('atualizar_perfil/:id')
   async atualizarUsuarioPerfil(@Param('id') id: number, @Body() data, @Res() response) {
     const result = await this.usuarioService.atualizarUsuarioPerfil(id, data);
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
 
-  @Patch('atualizarCargo/:id')
+  @Patch('atualizar_cargo/:id')
   async atualizarUsuarioCargo(@Param('id') id: number, @Query('id_cargo') id_cargo, @Res() response) {
     const result = await this.usuarioService.atualizarUsuarioCargo(id, id_cargo);
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
 
-  @Patch('atualizarSocial/:id')
+  @Patch('atualizar_social/:id')
   async atualizarUsuarioSocial(@Param('id') id: number, @Body() data, @Res() response) {
     const result = await this.usuarioService.atualizarUsuarioSocial(id, data);
     if (await (result).data) response.status(result.code).send(result.data)
@@ -91,7 +91,7 @@ export class UsuarioController {
     else return response.status(result.code).send(result.data)
   }
 
-  @Delete('deletarVarios')
+  @Delete('deletar_varios')
   async deletarVariosUsuario(@Query('ids') ids: string, @Res() response) {
     const result = await this.usuarioService.deletarVariosUsuario(ids);
     if (await (result).data) response.status(result.code).send(result.data)
@@ -149,28 +149,28 @@ export class UsuarioController {
     else return response.status(result.code).send(result.data)
   }
 
-  @Post('deixarDeSeguir')
+  @Post('deixar_de_seguir')
   async deixarDeSeguir(@Query('seguidor') id_seguidor: number, @Query('seguido') id_seguido: number, @Res() response) {
     const result = await this.usuarioService.deixarDeSeguir(id_seguidor, id_seguido);
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
 
-  @Get('listarSeguidores')
+  @Get('listar_Seguidores')
   async listarSeguidores(@Query('id_usuario_social') id: number, @Res() response) {
     const result = await this.usuarioService.listarSeguidores(id);
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
 
-  @Get('listarQuemSigo')
+  @Get('listar_quem_sigo')
   async listarQuemSigo(@Query('id_usuario_social') id: number, @Res() response) {
     const result = await this.usuarioService.listarQuemSigo(id);
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
 
-  @Get('qtdSeguindoESeguidores')
+  @Get('qtd_seguindo_e_seguidores')
   async quantosSeguindoESeguidores(@Query('id_usuario_social') id: number, @Res() response) {
     const result = await this.usuarioService.quantosSeguindoESeguidores(id);
     if (await (result).data) response.status(result.code).send(result.data)
@@ -226,7 +226,7 @@ export class UsuarioController {
     else return response.status(result.code).send(result.data)
   }
 
-  @Get('recuperacaoSenha')
+  @Get('recuperacao_senha')
   async recuperarSenha(@Query('email') email: string, @Res() response) {
     //const result = await this.usuarioService.alterarSenha(data);
     // if (await (result).data) response.status(result.code).send(result.data)
@@ -236,14 +236,14 @@ export class UsuarioController {
     return response.status(200).send("code")
   }
 
-  @Patch('alterarSenha')
+  @Patch('alterar_senha')
   async alterarSenha(@Body() data, @Res() response) {
     const result = await this.usuarioService.alterarSenha(data);
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
 
-  @Patch('alterarSenhaNova')
+  @Patch('alterar_senha_nova')
   async alterarSenhaNova(@Body() data, @Res() response) {
     const result = await this.usuarioService.alterarSenhaNova(data);
     if (await (result).data) response.status(result.code).send(result.data)

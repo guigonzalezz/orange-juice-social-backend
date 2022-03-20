@@ -13,7 +13,7 @@ export class CargoController {
     else return response.status(result.code).send(result.data)
   }
 
-  @Get('listarTodos')
+  @Get('listar_todos')
   async listarTodos(@Res() response) {
     const result = await this.cargoService.carregarTodosSemAdmin()
     if (await (result).data) response.status(result.code).send(result.data)
@@ -27,21 +27,21 @@ export class CargoController {
     else return response.status(result.code).send(result.data);
   }
 
-  @Get('buscarId')
+  @Get('buscar_id')
   async carregarCargoPeloId(@Query('id_cargo') id: number, @Res() response) {
     const result = await this.cargoService.findById(id)
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data);
   }
 
-  @Patch('toggleAtivoInativo')
+  @Patch('toggle_ativo_inativo')
   async toggleAtivarOuInativar(@Query('id_cargo') id: number, @Res() response) {
     const result = await this.cargoService.toggleAtivoOuInativo(id);
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
 
-  @Get('buscarNome')
+  @Get('buscar_nome')
   async carregarCargoPeloNome(@Query('nome') nome: string, @Res() response) {
     const result = await this.cargoService.findByNome(nome)
     if (await (result).data) response.status(result.code).send(result.data)
