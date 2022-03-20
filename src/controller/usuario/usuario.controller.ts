@@ -28,6 +28,13 @@ export class UsuarioController {
     else return response.status(result.code).send(result.data)
   }
 
+  @Get('buscar_por_email')
+  async carregarInfoUsuarioPorEmail(@Query('email_empresarial') email: string, @Res() response) {
+    const result = await this.usuarioService.carregarInfoUsuarioPorEmail(email);
+    if (await (result).data) response.status(result.code).send(result.data)
+    else return response.status(result.code).send(result.data)
+  }
+
   @Get('buscar_cargo')
   async carregarCargoUsuario(@Query('id_usuario') id: number, @Res() response) {
     const result = await this.usuarioService.carregarCargoUsuario(id);

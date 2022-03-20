@@ -9,6 +9,7 @@ import { UsuarioRepository } from 'src/repository/database/usuario/usuario.repos
 import { BaseServiceGeneric, BasicResponseInterface } from '../service.generic'
 import { CargoRepository } from 'src/repository/database/cargo/cargo.repository'
 import { FeedbackRepository } from 'src/repository/database/feedback/feedback.repository'
+import { UsuarioPerfilInterface } from './interface/usuario_perfil.interface'
 @Injectable()
 export class UsuarioService extends BaseServiceGeneric {
   constructor(
@@ -61,11 +62,34 @@ export class UsuarioService extends BaseServiceGeneric {
       stamp_created: usuario.stamp_created,
       cargo: cargo.nome,
       pontos: usuario_pontos.pontos,
-      social: await this.usuarioRepository.buscaUsuarioSocialPorId({ id_usuario }),
+      social: await this.usuarioRepository.buscaUsuarioSocialPorId(id_usuario),
       perfil: await this.usuarioRepository.buscaUsuarioPerfilPorId(id_usuario),
       feedback: null,
       avatar_link: (await this.getAvatar(usuario.id_usuario)).data,
       banner_link: (await this.getBanner(usuario.id_usuario)).data,
+    })
+  }
+
+  async carregarInfoUsuarioPorEmail(email_empresarial: string): Promise<BasicResponseInterface> {
+    const usuario_perfil: UsuarioPerfilInterface = await this.usuarioRepository.buscaUsuarioPerfilPorEmailEmpresarial(email_empresarial);
+    if (!usuario_perfil) return this.createReturn(404,"Usuario não encontrado!")
+
+    const usuario_pontos: UsuarioPontuacaoInterface = await this.usuarioRepository.buscaUsuarioPontuacaoPorId(usuario_perfil.id_usuario)
+    const usuario_principal: UsuarioInterface  = await this.usuarioRepository.buscaUsuarioPorId(usuario_perfil.id_usuario)
+    const cargo: CargoInterface = await this.cargoRepository.buscaCargoPeloId(usuario_principal.id_cargo)
+
+    return this.createReturn(200, {
+      id_usuario: usuario_principal.id_usuario,
+      ativo_SN: usuario_principal.ativo_SN,
+      colaborador_SN: usuario_principal.colaborador_SN,
+      stamp_created: usuario_principal.stamp_created,
+      cargo: cargo.nome,
+      pontos: usuario_pontos.pontos,
+      social: await this.usuarioRepository.buscaUsuarioSocialPorId(usuario_principal.id_usuario),
+      perfil: usuario_perfil,
+      feedback: null,
+      avatar_link: (await this.getAvatar(usuario_principal.id_usuario)).data,
+      banner_link: (await this.getBanner(usuario_principal.id_usuario)).data,
     })
   }
 

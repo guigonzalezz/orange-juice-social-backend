@@ -87,6 +87,10 @@ export class UsuarioRepository {
     return await this.usuarioPerfilRepository.findOne({id_usuario})
   }
 
+  async buscaUsuarioPerfilPorEmailEmpresarial(email_empresarial) {
+    return await this.usuarioPerfilRepository.findOne({email_empresarial})
+  }
+
   async buscaUsuarioPerfilNomeEEmailEmpresarialPorId(id_usuario) {
     return await this.usuarioPerfilRepository.findOne({where:{id_usuario}, select:['nome','email_empresarial']})
   }

@@ -1,6 +1,7 @@
 
 
 export interface UsuarioPerfilInterface {
+  id_usuario:number;
   nome: string;
   email: string;
   data_nasc: Date;
