@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ContentfulModule } from './controller/contentful/contentful.module';
 import { CargoModule } from './controller/cargo/cargo.module';
 import { UsuarioModule } from './controller/usuario/usuario.module';
+import { RelatorioModule } from './controller/relatorio/relatorio.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { UsuarioModule } from './controller/usuario/usuario.module';
     AuthModule,
     UsuarioModule,
     CargoModule,
-    ContentfulModule
+    ContentfulModule,
+    RelatorioModule
   ],
   controllers: [],
   providers: [],

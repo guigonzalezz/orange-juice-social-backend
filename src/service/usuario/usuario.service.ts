@@ -48,6 +48,12 @@ export class UsuarioService extends BaseServiceGeneric {
     return this.createReturn(200, usuarios)
   }
 
+  async carregarTodosUsuariosAtivosNomeEmailCel(): Promise<BasicResponseInterface> {
+    let usuarios: any = await this.usuarioRepository.buscaTodosUsuariosAtivosNomeEmailCel();
+    if (!usuarios) return this.createReturn(204, "Não foi encontrado registros!")
+    return this.createReturn(200, usuarios.filter(u => u.nome != 'admin'))
+  }
+
   async carregarInfoUsuario(id_usuario: number): Promise<BasicResponseInterface> {
     const usuario: UsuarioInterface = await this.usuarioRepository.buscaUsuarioPorId(id_usuario);
     if (!usuario) return this.createReturn(404,"Usuario não encontrado!")
