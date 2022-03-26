@@ -54,6 +54,10 @@ export class UsuarioRepository {
   async buscaIdCargoPorIdUsuario(id_usuario: number): Promise<number>{
     return (await this.usuarioRepository.findOne({ where:{ id_usuario}, select: ['id_cargo']})).id_cargo
   }
+  
+  async buscaTodosUsuariosAtivosNomeEmailCel() {
+    return this.usuarioPerfilRepository.find({select:['nome', 'email', 'email_empresarial', 'contato']})
+  }
 
   async buscaInfoCompletaUsuarioPorId(id_usuario,cargo) {
     const usuario = await this.usuarioRepository.findOne({ id_usuario});
