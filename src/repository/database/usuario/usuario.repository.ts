@@ -304,14 +304,19 @@ export class UsuarioRepository {
   }
 
   async concluirTrilha(data) {
-    const concluido = await this.usuarioTrilhaConclusaoRepository.findOne({ where: { id_trilha: data.id_trilha, id_usuario: data.id_usuario}})
+    const concluido = await this.usuarioTrilhaConclusaoRepository.findOne({ where: { trilha_nome: data.nome, id_usuario: data.id_usuario}})
 
     if(concluido) {
-      await this.usuarioTrilhaConclusaoRepository.update({id_usuario_trilha_conclusao: concluido.id_usuario_trilha_conclusao},{ concluido_SN: concluido.concluido_SN == 'N' ? 'S' : 'N' })
+      await this.usuarioTrilhaConclusaoRepository.update({
+        id_usuario_trilha_conclusao: concluido.id_usuario_trilha_conclusao
+      },{ 
+        concluido_SN: concluido.concluido_SN == 'N' ? 'S' : 'N', 
+        anotacao: concluido.anotacao != data.anotacao ? data.anotacao : concluido.anotacao
+      })
     } else if(!concluido) {
       await this.usuarioTrilhaConclusaoRepository.save({
         id_usuario: data.id_usuario,
-        id_trilha: data.id_trilha, 
+        trilha_nome: data.nome, 
         concluido_SN: 'S',
         anotacao: data.anotacao
       })
@@ -319,14 +324,19 @@ export class UsuarioRepository {
   }
 
   async concluirCurso(data) {
-    const concluido = await this.usuarioCursoConclusaoRepository.findOne({ where: { id_curso: data.id_curso, id_usuario: data.id_usuario}})
+    const concluido = await this.usuarioCursoConclusaoRepository.findOne({ where: { curso_nome: data.nome, id_usuario: data.id_usuario}})
 
     if(concluido) {
-      await this.usuarioCursoConclusaoRepository.update({id_usuario_curso_conclusao: concluido.id_usuario_curso_conclusao},{ concluido_SN: concluido.concluido_SN == 'N' ? 'S' : 'N' })
+      await this.usuarioCursoConclusaoRepository.update({
+        id_usuario_curso_conclusao: concluido.id_usuario_curso_conclusao
+      },{ 
+        concluido_SN: concluido.concluido_SN == 'N' ? 'S' : 'N', 
+        anotacao: concluido.anotacao != data.anotacao ? data.anotacao : concluido.anotacao 
+      })
     } else if(!concluido) {
       await this.usuarioCursoConclusaoRepository.save({
         id_usuario: data.id_usuario,
-        id_curso: data.id_curso, 
+        curso_nome: data.nome, 
         concluido_SN: 'S',
         anotacao: data.anotacao
       })
