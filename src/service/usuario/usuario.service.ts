@@ -322,6 +322,14 @@ export class UsuarioService extends BaseServiceGeneric {
     return this.createReturn(200, 'OK')
   }
 
+  async carregarTrilhasUsuario(id_usuario): Promise<BasicResponseInterface> {  
+    return this.createReturn(200, await this.usuarioRepository.carregarTrilhasUsuario(id_usuario))
+  }
+
+  async carregarCursosUsuario(id_usuario): Promise<BasicResponseInterface> {  
+    return this.createReturn(200, await this.usuarioRepository.carregarCursosUsuario(id_usuario))
+  }
+
   async concluirBlogLeitura(data): Promise<BasicResponseInterface> {  
     await this.usuarioRepository.concluirBlogLeitura(data)
     return this.createReturn(200, 'OK')

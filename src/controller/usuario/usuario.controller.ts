@@ -270,4 +270,18 @@ export class UsuarioController {
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
+
+  @Get('trilhas')
+  async carregarTrilhasUsuario(@Query('id_usuario') id_usuario:number, @Res() response) {
+    const result = await this.usuarioService.carregarTrilhasUsuario(id_usuario);
+    if (await (result).data) response.status(result.code).send(result.data)
+    else return response.status(result.code).send(result.data)
+  }
+
+  @Get('cursos')
+  async carregarCursosUsuario(@Query('id_usuario') id_usuario:number, @Res() response) {
+    const result = await this.usuarioService.carregarCursosUsuario(id_usuario);
+    if (await (result).data) response.status(result.code).send(result.data)
+    else return response.status(result.code).send(result.data)
+  }
 }

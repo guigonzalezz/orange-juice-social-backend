@@ -306,8 +306,8 @@ export class UsuarioRepository {
   async concluirTrilha(data) {
     const concluido = await this.usuarioTrilhaConclusaoRepository.findOne({ where: { id_trilha: data.id_trilha, id_usuario: data.id_usuario}})
 
-    if(concluido && concluido.concluido_SN == 'N') {
-      await this.usuarioTrilhaConclusaoRepository.update({id_usuario_trilha_conclusao: concluido.id_usuario_trilha_conclusao},{ concluido_SN: 'S'})
+    if(concluido) {
+      await this.usuarioTrilhaConclusaoRepository.update({id_usuario_trilha_conclusao: concluido.id_usuario_trilha_conclusao},{ concluido_SN: concluido.concluido_SN == 'N' ? 'S' : 'N' })
     } else if(!concluido) {
       await this.usuarioTrilhaConclusaoRepository.save({
         id_usuario: data.id_usuario,
@@ -321,8 +321,8 @@ export class UsuarioRepository {
   async concluirCurso(data) {
     const concluido = await this.usuarioCursoConclusaoRepository.findOne({ where: { id_curso: data.id_curso, id_usuario: data.id_usuario}})
 
-    if(concluido && concluido.concluido_SN == 'N') {
-      await this.usuarioCursoConclusaoRepository.update({id_usuario_curso_conclusao: concluido.id_usuario_curso_conclusao},{ concluido_SN: 'S'})
+    if(concluido) {
+      await this.usuarioCursoConclusaoRepository.update({id_usuario_curso_conclusao: concluido.id_usuario_curso_conclusao},{ concluido_SN: concluido.concluido_SN == 'N' ? 'S' : 'N' })
     } else if(!concluido) {
       await this.usuarioCursoConclusaoRepository.save({
         id_usuario: data.id_usuario,
@@ -352,8 +352,8 @@ export class UsuarioRepository {
   async concluirBlogLeitura(data) {
     const concluido = await this.usuarioBlogLeituraRepository.findOne({ where: { id_blog: data.id_blog, id_usuario: data.id_usuario}})
 
-    if(concluido && concluido.concluido_SN == 'N') {
-      await this.usuarioBlogLeituraRepository.update({id_usuario_blog_leitura: concluido.id_usuario_blog_leitura},{ concluido_SN: 'S'})
+    if(concluido) {
+      await this.usuarioBlogLeituraRepository.update({id_usuario_blog_leitura: concluido.id_usuario_blog_leitura},{ concluido_SN: concluido.concluido_SN == 'N' ? 'S' : 'N'})
     } else if(!concluido) {
       await this.usuarioBlogLeituraRepository.save({
         id_usuario: data.id_usuario,
@@ -370,6 +370,14 @@ export class UsuarioRepository {
 
   async carregarQuizzesEnviados(){
     return await this.usuarioQuizConclusaoRepository.find()
+  }
+
+  async carregarCursosUsuario(id_usuario){
+    return await this.usuarioCursoConclusaoRepository.find({id_usuario}) 
+  }
+
+  async carregarTrilhasUsuario(id_usuario){
+    return await this.usuarioTrilhaConclusaoRepository.find({id_usuario})
   }
 
   async feedbackDesafioEnviado(id_usuario_desafio_conclusao) {
