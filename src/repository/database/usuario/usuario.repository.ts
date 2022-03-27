@@ -378,6 +378,10 @@ export class UsuarioRepository {
     return await this.usuarioDesafioConclusaoRepository.find()
   }
 
+  async carregarDesafiosEnviadosUsuarioId(id_usuario){
+    return await this.usuarioDesafioConclusaoRepository.find({id_usuario})
+  }
+
   async carregarQuizzesEnviados(){
     return await this.usuarioQuizConclusaoRepository.find()
   }

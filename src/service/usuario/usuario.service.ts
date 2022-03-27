@@ -378,6 +378,24 @@ export class UsuarioService extends BaseServiceGeneric {
     return this.createReturn(200, retorno)
   }
 
+  async carregarDesafiosEnviadosComFeedbacksDoUsuarioId(id):Promise<BasicResponseInterface>{
+    let desafiosEnviados: any = await this.usuarioRepository.carregarDesafiosEnviadosUsuarioId(id)
+
+    //PEGO OS DESAFIOS QUE ELE ENVIOU E BUSCO OS FEEDBACKS
+    const feedbacks = await this.feedbackRepository.carregarFeedbackDesafiosEnviadosUsuarioId(id)
+    const retorno = []
+    for (const desafio of desafiosEnviados) {
+      retorno.push({
+        ...desafio,
+        usuario: await this.usuarioRepository.buscaUsuarioPerfilNomeEEmailEmpresarialPorId(desafio.id_usuario),
+        feedback: feedbacks.filter(elem => elem.id_desafio ==  desafio.id_usuario_desafio_conclusao).sort((a,b)=>{
+          return a.id_udc < b.id_udc ? 1 : a.id_udc > b.id_udc ? -1 : 0
+        })[0]
+      })
+    }
+    return this.createReturn(200, retorno)
+  }
+
   async carregarQuizzesEnviadosComFeedbacks(): Promise<BasicResponseInterface>{
     let quizzesEnviados: any = await this.usuarioRepository.carregarQuizzesEnviados()
     const feedbacks = await this.feedbackRepository.carregarFeedbackQuizzesEnviados()

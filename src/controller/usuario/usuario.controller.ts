@@ -264,6 +264,13 @@ export class UsuarioController {
     else return response.status(result.code).send(result.data)
   }
 
+  @Get('desafios_usuario')
+  async carregarDesafiosUsuario(@Query('id_usuario') id: number, @Res() response) {
+    const result = await this.usuarioService.carregarDesafiosEnviadosComFeedbacksDoUsuarioId(id);
+    if (await (result).data) response.status(result.code).send(result.data)
+    else return response.status(result.code).send(result.data)
+  }
+
   @Get('quizzes')
   async carregarQuizzes(@Res() response) {
     const result = await this.usuarioService.carregarQuizzesEnviadosComFeedbacks();
