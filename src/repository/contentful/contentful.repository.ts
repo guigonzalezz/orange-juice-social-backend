@@ -100,7 +100,7 @@ export class ContentfulRepository {
     let contentfulRes: any = (await this.contentfulClient.getEntries({ content_type: 'desafio'})).items
     contentfulRes = contentfulRes.map(item => ({
       titulo: item.fields.titulo,
-      descricao: item.fields.descricao.content,
+      descricao: item.fields.descricao,
       ordem: item.fields.ordem,
       pontos: item.fields.pontos,
       cargo: item.fields.cargo,

@@ -79,6 +79,10 @@ export class FeedbackRepository {
     return await this.udcFeedbackRepository.find({select:["id_udc", "stamp_created", "id_desafio", "nota","feedback"]})
   } 
 
+  async carregarFeedbackDesafiosEnviadosUsuarioId(id_usuario){
+    return await this.udcFeedbackRepository.find({where:{id_usuario}, select:["id_udc", "stamp_created", "id_desafio", "nota","feedback", "id_usuario"]})
+  }
+
   async carregarFeedbackQuizzesEnviados(){
     return await this.uqcFeedbackRepository.find({select:["id_uqc", "stamp_created", "id_quiz", "nota","feedback"]})
   }
