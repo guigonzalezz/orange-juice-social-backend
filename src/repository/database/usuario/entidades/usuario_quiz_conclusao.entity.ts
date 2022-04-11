@@ -7,12 +7,18 @@ export class UsuarioQuizConclusao extends BaseEntity {
   @Column()
   id_usuario: number;
 
-  @Column()
+  @Column({default: 0})
+  nota: number;
+
+  @Column({default:''})
   quiz_nome: string;
 
-  @Column({ length: 1 })
-  feedback_recebido_sn: string;
+  @Column({default: ''})
+  tempo_realizado: string;
+
+  @Column({default: () => 'CURRENT_TIMESTAMP' })
+  stamp_created: Date;
   
-  @Column()
+  @Column({default:''})
   anotacao: string;
 }

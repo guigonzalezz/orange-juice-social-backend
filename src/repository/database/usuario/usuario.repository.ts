@@ -14,6 +14,8 @@ import { UsuarioQuizConclusao } from './entidades/usuario_quiz_conclusao.entity'
 import { UsuarioDesafioConclusao } from './entidades/usuario_desafio_conclusao.entity';
 import { UsuarioCursoConclusao } from './entidades/usuario_curso_conclusao.entity';
 import { UsuarioBlogLeitura } from './entidades/usuario_blog_leitura.entity';
+import { UsuarioQuizResposta } from './entidades/usuario_quiz_respostas.entity';
+import { UsuarioQuizPergunta } from './entidades/usuario_quiz_pergunta.entity';
 @Injectable()
 export class UsuarioRepository {
   constructor(
@@ -37,6 +39,10 @@ export class UsuarioRepository {
     private usuarioCursoConclusaoRepository: Repository<UsuarioCursoConclusao>,
     @InjectRepository(UsuarioBlogLeitura)
     private usuarioBlogLeituraRepository: Repository<UsuarioBlogLeitura>,
+    @InjectRepository(UsuarioQuizResposta)
+    private usuarioQuizRespostaRepository: Repository<UsuarioQuizResposta>,
+    @InjectRepository(UsuarioQuizPergunta)
+    private usuarioQuizPerguntaRepository: Repository<UsuarioQuizPergunta>
   ) { }
 
   async buscarInfoLoginPorEmail(email_empresarial: string): Promise<UsuarioPerfil> {
@@ -344,19 +350,27 @@ export class UsuarioRepository {
   }
 
   async concluirQuiz(data) {
-    const concluido = await this.usuarioQuizConclusaoRepository.findOne({ where: { id_quiz: data.id_quiz, id_usuario: data.id_usuario}})
+    const quizSalvo = await this.usuarioQuizConclusaoRepository.save({
+      id_usuario: data.id_usuario,
+      quiz_nome: data.quiz_nome, 
+      tempo_realizado: data.tempo_realizado,
+      anotacao: data.anotacao,
+      nota: data.nota
+    })
 
-    if(concluido) {
-      await this.usuarioQuizConclusaoRepository.update({id_usuario_quiz_conclusao: concluido.id_usuario_quiz_conclusao},{ 
+    data.questoes.map(async questao => {
+      const quizPergunta = await this.usuarioQuizPerguntaRepository.save({
+        id_usuario_quiz_conclusao: quizSalvo.id_usuario_quiz_conclusao,
+        pergunta: questao.pergunta,
+        acertou: questao.acertou
+      })
+      await this.usuarioQuizRespostaRepository.save({
+        id_usuario_quiz_conclusao: quizSalvo.id_usuario_quiz_conclusao,
+        id_usuario_quiz_pergunta: quizPergunta.id_usuario_quiz_pergunta,
+        resposta: questao.resposta
+      })
+    })
 
-      })
-    } else if(!concluido) {
-      await this.usuarioQuizConclusaoRepository.save({
-        id_usuario: data.id_usuario,
-        quiz_nome: data.quiz_nome, 
-        anotacao: data.anotacao
-      })
-    }
   }
 
   async concluirBlogLeitura(data) {
@@ -386,6 +400,18 @@ export class UsuarioRepository {
     return await this.usuarioQuizConclusaoRepository.find()
   }
 
+  async carregarQuizzesEnviadosDoUsuarioId(id_usuario) {
+    return await this.usuarioQuizConclusaoRepository.find({id_usuario})
+  }
+  
+  async caregarQuizPerguntasPorId(id_usuario_quiz_conclusao) {
+    return await this.usuarioQuizPerguntaRepository.find({id_usuario_quiz_conclusao})
+  }
+
+  async caregarQuizRespostasPorId(id_usuario_quiz_conclusao) {
+    return await this.usuarioQuizRespostaRepository.find({id_usuario_quiz_conclusao})
+  }
+
   async carregarCursosUsuario(id_usuario){
     return await this.usuarioCursoConclusaoRepository.find({id_usuario}) 
   }
@@ -396,10 +422,6 @@ export class UsuarioRepository {
 
   async feedbackDesafioEnviado(id_usuario_desafio_conclusao) {
     return await this.usuarioDesafioConclusaoRepository.update({id_usuario_desafio_conclusao},{feedback_recebido_SN:'S'})
-  }
-
-  async feedbackQuizEnviado(id_usuario_quiz_conclusao) {
-    return await this.usuarioQuizConclusaoRepository.update({id_usuario_quiz_conclusao},{feedback_recebido_sn:'S'})
   }
   
 }

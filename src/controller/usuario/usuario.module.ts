@@ -20,14 +20,16 @@ import { UsuarioCursoConclusao } from 'src/repository/database/usuario/entidades
 import { FeedbackRepository } from 'src/repository/database/feedback/feedback.repository';
 import { LogPlataforma } from 'src/repository/database/feedback/entidades/log_plataforma.entity';
 import { UdcFeedbackNota } from 'src/repository/database/feedback/entidades/udc_feedback_nota.entity';
-import { UqcFeedbackNota } from 'src/repository/database/feedback/entidades/uqc_feedback_nota.entity';
+import { UsuarioQuizResposta } from 'src/repository/database/usuario/entidades/usuario_quiz_respostas.entity';
+import { UsuarioQuizPergunta } from 'src/repository/database/usuario/entidades/usuario_quiz_pergunta.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([
     UsuarioV2, UsuarioPerfil, UsuarioSocial, 
     UsuarioPontuacao, UsuarioFollow, UsuarioDesafioConclusao,
     UsuarioQuizConclusao, UsuarioBlogLeitura, UsuarioCursoConclusao,
-    UsuarioTrilhaConclusao, UdcFeedbackNota, UqcFeedbackNota
+    UsuarioTrilhaConclusao, UdcFeedbackNota, UsuarioQuizResposta,
+    UsuarioQuizPergunta
   ]), HttpModule, CargoModule],
   controllers: [UsuarioController],
   providers: [

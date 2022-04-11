@@ -226,13 +226,6 @@ export class UsuarioController {
     else return response.status(result.code).send(result.data)
   }
 
-  @Post('feedback/quiz')
-  async enviarQuizFeedbackNota(@Body() data, @Res() response) {
-    const result = await this.usuarioService.enviarQuizFeedbackNota(data);
-    if (await (result).data) response.status(result.code).send(result.data)
-    else return response.status(result.code).send(result.data)
-  }
-
   @Get('recuperacao_senha')
   async recuperarSenha(@Query('email') email: string, @Res() response) {
     //const result = await this.usuarioService.alterarSenha(data);
@@ -271,9 +264,9 @@ export class UsuarioController {
     else return response.status(result.code).send(result.data)
   }
 
-  @Get('quizzes')
-  async carregarQuizzes(@Res() response) {
-    const result = await this.usuarioService.carregarQuizzesEnviadosComFeedbacks();
+  @Get('quizzes_usuario')
+  async carregarQuizzesUsuario(@Query('id_usuario') id: number, @Res() response) {
+    const result = await this.usuarioService.carregarQuizzesEnviadossDoUsuarioId(id);
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }

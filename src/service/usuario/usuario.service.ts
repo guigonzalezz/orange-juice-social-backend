@@ -304,11 +304,6 @@ export class UsuarioService extends BaseServiceGeneric {
   
   async concluirQuiz(data): Promise<BasicResponseInterface> {  
     await this.usuarioRepository.concluirQuiz(data)
-    await this.feedbackRepository.adicionarFeedbackENotaQuiz({
-      ...data,
-      feedback: data.feedback ? data.feedback : '',
-      id_responsavel: data.id_responsavel ? data.id_responsavel : 0
-    })
     return this.createReturn(200, 'OK')
   }
   
@@ -332,12 +327,6 @@ export class UsuarioService extends BaseServiceGeneric {
 
   async concluirBlogLeitura(data): Promise<BasicResponseInterface> {  
     await this.usuarioRepository.concluirBlogLeitura(data)
-    return this.createReturn(200, 'OK')
-  }
-
-  async enviarQuizFeedbackNota(data): Promise<BasicResponseInterface> {
-    await this.feedbackRepository.enviarQuizFeedbackNota(data)
-    await this.usuarioRepository.feedbackQuizEnviado(data.id_quiz)
     return this.createReturn(200, 'OK')
   }
 
@@ -396,16 +385,16 @@ export class UsuarioService extends BaseServiceGeneric {
     return this.createReturn(200, retorno)
   }
 
-  async carregarQuizzesEnviadosComFeedbacks(): Promise<BasicResponseInterface>{
-    let quizzesEnviados: any = await this.usuarioRepository.carregarQuizzesEnviados()
-    const feedbacks = await this.feedbackRepository.carregarFeedbackQuizzesEnviados()
-    quizzesEnviados = quizzesEnviados.map(async quiz => {
-      return {
+  async carregarQuizzesEnviadossDoUsuarioId(id): Promise<BasicResponseInterface>{
+    const quizConcluidos = await this.usuarioRepository.carregarQuizzesEnviadosDoUsuarioId(id)
+    const retorno = []
+    for (const quiz of quizConcluidos) {
+      retorno.push({
         ...quiz,
-        usuario: await this.usuarioRepository.buscaUsuarioPerfilNomeEEmailEmpresarialPorId(quiz.id_usuario),
-        feedback: feedbacks.filter(elem => elem.id_quiz ==  quiz.id_quiz)
-      }
-    })
-    return this.createReturn(200, quizzesEnviados)
+        perguntas: await this.usuarioRepository.caregarQuizPerguntasPorId(quiz.id_usuario_quiz_conclusao),
+        respostaS: await this.usuarioRepository.caregarQuizRespostasPorId(quiz.id_usuario_quiz_conclusao) 
+      })
+    }
+    return this.createReturn(200, retorno)
   }
 }
