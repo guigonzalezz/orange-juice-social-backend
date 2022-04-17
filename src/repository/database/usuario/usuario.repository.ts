@@ -306,6 +306,11 @@ export class UsuarioRepository {
         stamp_enviado: new Date(),
         feedback_recebido_SN: 'N'
       })
+      await getConnection().createQueryBuilder()
+        .update(UsuarioSocial)
+        .set({ desafios_concluidos: () => "desafios_concluidos + 1" })
+        .where("id_usuario = :id", { id: data.id_usuario })
+        .execute();
     }
   }
 
@@ -326,6 +331,11 @@ export class UsuarioRepository {
         concluido_SN: 'S',
         anotacao: data.anotacao
       })
+      await getConnection().createQueryBuilder()
+        .update(UsuarioSocial)
+        .set({ trilhas_concluidos: () => "trilhas_concluidos + 1" })
+        .where("id_usuario = :id", { id: data.id_usuario })
+        .execute();
     }
   }
 
@@ -346,10 +356,25 @@ export class UsuarioRepository {
         concluido_SN: 'S',
         anotacao: data.anotacao
       })
+
+      await getConnection().createQueryBuilder()
+        .update(UsuarioSocial)
+        .set({ cursos_concluidos: () => "cursos_concluidos + 1" })
+        .where("id_usuario = :id", { id: data.id_usuario })
+        .execute();
     }
   }
 
   async concluirQuiz(data) {
+    const concluido = await this.usuarioQuizConclusaoRepository.findOne({ where: { quiz_nome: data.quiz_nome, id_usuario: data.id_usuario}})
+    if(!concluido) {
+      await getConnection().createQueryBuilder()
+        .update(UsuarioSocial)
+        .set({ quizzes_concluidos: () => "quizzes_concluidos + 1" })
+        .where("id_usuario = :id", { id: data.id_usuario })
+        .execute();
+    }
+
     const quizSalvo = await this.usuarioQuizConclusaoRepository.save({
       id_usuario: data.id_usuario,
       quiz_nome: data.quiz_nome, 
