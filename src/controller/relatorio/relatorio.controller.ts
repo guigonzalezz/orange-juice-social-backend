@@ -13,4 +13,11 @@ export class RelatorioController {
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
+
+  @Get('usuario_ficha')
+  async carregarDesafiosUsuario(@Query('email_empresarial') email_empresarial: string, @Res() response) {
+    const result = await this.usuarioService.carregaFichaUsuario(email_empresarial);
+    if (await (result).data) response.status(result.code).send(result.data)
+    else return response.status(result.code).send(result.data)
+  }
 }

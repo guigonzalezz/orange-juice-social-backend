@@ -54,6 +54,30 @@ export class UsuarioService extends BaseServiceGeneric {
     return this.createReturn(200, usuarios.filter(u => u.nome != 'admin').map(us => [us.nome, us.email, us.email_empresarial, us.contato]))
   }
 
+  async carregaFichaUsuario(email_empresarial:string): Promise<BasicResponseInterface> {
+    let usuario = await this.usuarioRepository.buscarUsuarioPerfilPorEmail(email_empresarial)
+    if (!usuario) return this.createReturn(404, "Usuario não encontrado!")
+
+    let id_cargo = await this.usuarioRepository.buscaIdCargoPorIdUsuario(usuario.id_usuario)
+    const cargo = await this.cargoRepository.buscaCargoPeloId(id_cargo)
+    
+    const ficha_completa = await this.usuarioRepository.buscaUsuarioFicha(usuario.id_usuario, cargo)
+    
+    return this.createReturn(200, {
+      nome: ficha_completa.perfil.nome,
+      cpf: ficha_completa.perfil.cpf,
+      email_empresarial: ficha_completa.perfil.email_empresarial,
+      email_pessoal: ficha_completa.perfil.email,
+      contato: ficha_completa.perfil.contato,
+      cargo: cargo.nome,
+      qtd_desafios_completos: ficha_completa.social.desafios_concluidos,
+      qtd_cursos_completos: ficha_completa.social.cursos_concluidos,
+      qtd_trilhas_completos: ficha_completa.social.trilhas_concluidos,
+      qtd_quizzes_completos: ficha_completa.social.quizzes_concluidos,
+      linkedin: ficha_completa.social.linkedin_link
+    })
+  }
+
   async carregarInfoUsuario(id_usuario: number): Promise<BasicResponseInterface> {
     const usuario: UsuarioInterface = await this.usuarioRepository.buscaUsuarioPorId(id_usuario);
     if (!usuario) return this.createReturn(404,"Usuario não encontrado!")

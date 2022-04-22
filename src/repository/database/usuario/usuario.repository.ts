@@ -65,6 +65,23 @@ export class UsuarioRepository {
     return this.usuarioPerfilRepository.find({select:['nome', 'email', 'email_empresarial', 'contato']})
   }
 
+  async buscaUsuarioFicha(id_usuario,cargo) {
+    const usuario = await this.usuarioRepository.findOne({ id_usuario});
+    const usuario_pontos = await this.usuarioPontuacaoRepository.findOne({ id_usuario });
+    const social = await this.usuarioSocialRepository.findOne({ id_usuario })
+    const perfil = await this.usuarioPerfilRepository.findOne({select: ["id_usuario_perfil", "nome", "email", "email_empresarial", "senha", "data_nasc", "contato", "cpf", "cidade", "estado", "pais", "id_usuario"], where:{ id_usuario }})
+    return {
+      id_usuario: usuario.id_usuario,
+      ativo_SN: usuario.ativo_SN,
+      colaborador_SN: usuario.colaborador_SN,
+      stamp_created: usuario.stamp_created,
+      cargo: cargo.nome,
+      pontos: usuario_pontos.pontos,
+      social,
+      perfil
+    }
+  }
+
   async buscaInfoCompletaUsuarioPorId(id_usuario,cargo) {
     const usuario = await this.usuarioRepository.findOne({ id_usuario});
     const usuario_pontos = await this.usuarioPontuacaoRepository.findOne({ id_usuario });
