@@ -501,18 +501,30 @@ export class UsuarioRepository {
   }
   async carregarQtdConclusaoCursos() {
     //Trago todos os cursos e a qtde que eles foram concluidos
-    
-    
+    return await getConnection().query(`
+      SELECT ucc.curso_nome, count(DISTINCT(ucc.curso_nome)) as qtd_concluido
+      FROM usuario_curso_conclusao ucc
+      GROUP BY ucc.curso_nome
+      ORDER BY qtd_concluido DESC
+    `,[])
   }
   async carregarQtdConclusaoQuizzes() {
     //Trago todos os quizzes e a qtde que eles foram concluidos
-    
-    
+     return await getConnection().query(`
+      SELECT uqc.quiz_nome, count(DISTINCT(uqc.quiz_nome)) as qtd_concluido
+      FROM usuario_quiz_conclusao uqc
+      GROUP BY uqc.quiz_nome
+      ORDER BY qtd_concluido DESC
+    `,[])
   }
   async carregarQtdConclusaoDesafios() {
     //Trago todos os desafios e a qtde que eles foram concluidos
-    
-    
+     return await getConnection().query(`
+      SELECT udc.desafio_nome, count(DISTINCT(udc.desafio_nome)) as qtd_concluido
+      FROM usuario_desafio_conclusao udc
+      GROUP BY udc.desafio_nome
+      ORDER BY qtd_concluido DESC
+    `,[])
   }
   
 }
