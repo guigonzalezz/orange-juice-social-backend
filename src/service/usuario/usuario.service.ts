@@ -442,21 +442,15 @@ export class UsuarioService extends BaseServiceGeneric {
     return this.createReturn(200, retorno)
   }
   async carregarQtdConclusaoCursos(): Promise<BasicResponseInterface> {
-    const retorno = []
     //Trago todos os cursos e a qtde que eles foram concluidos
-    
-    return this.createReturn(200, retorno)
+    return this.createReturn(200, await this.usuarioRepository.carregarQtdConclusaoCursos())
   }
   async carregarQtdConclusaoQuizzes(): Promise<BasicResponseInterface> {
-    const retorno = []
     //Trago todos os quizzes e a qtde que eles foram concluidos
-    
-    return this.createReturn(200, retorno)
+    return this.createReturn(200, await this.usuarioRepository.carregarQtdConclusaoQuizzes())
   }
   async carregarQtdConclusaoDesafios(): Promise<BasicResponseInterface> {
-    const retorno = []
     //Trago todos os desafios e a qtde que eles foram concluidos
-    
-    return this.createReturn(200, retorno)
+    return this.createReturn(200, await this.usuarioRepository.carregarQtdConclusaoDesafios())
   }
 }
