@@ -20,4 +20,41 @@ export class RelatorioController {
     if (await (result).data) response.status(result.code).send(result.data)
     else return response.status(result.code).send(result.data)
   }
+
+  @Get('ranqueamento_usuarios')
+  async carregarRanqueamentoUsuarios(@Res() response) {
+    const result = await this.usuarioService.carregarRanqueamentoUsuarios();
+    if (await (result).data) response.status(result.code).send(result.data)
+    else return response.status(result.code).send(result.data)
+  }
+
+  @Get('notas_desafios_usuarios')
+  async carregarNotasDesafiosUsuarios(@Res() response) {
+    const result = await this.usuarioService.carregarNotasDesafiosUsuarios();
+    if (await (result).data) response.status(result.code).send(result.data)
+    else return response.status(result.code).send(result.data)
+  }
+
+  @Get('qtd_conclusao_cursos')
+  async carregarQtdConclusaoCursos(@Res() response) {
+    const result = await this.usuarioService.carregarQtdConclusaoCursos();
+    if (await (result).data) response.status(result.code).send(result.data)
+    else return response.status(result.code).send(result.data)
+  }
+
+  @Get('qtd_conclusao_quizzes')
+  async carregarQtdConclusaoQuizzes(@Res() response) {
+    const result = await this.usuarioService.carregarQtdConclusaoQuizzes();
+    if (await (result).data) response.status(result.code).send(result.data)
+    else return response.status(result.code).send(result.data)
+  }
+
+  @Get('qtd_conclusao_desafios')
+  async carregarQtdConclusaoDesafios(@Res() response) {
+    const result = await this.usuarioService.carregarQtdConclusaoDesafios();
+    if (await (result).data) response.status(result.code).send(result.data)
+    else return response.status(result.code).send(result.data)
+  }
+
+
 }

@@ -465,5 +465,54 @@ export class UsuarioRepository {
   async feedbackDesafioEnviado(id_usuario_desafio_conclusao) {
     return await this.usuarioDesafioConclusaoRepository.update({id_usuario_desafio_conclusao},{feedback_recebido_SN:'S'})
   }
+
+  async carregarRanqueamentoUsuarios() {
+    //Baseado na quantidade de desafios/quizzes/cursos enviados eu monto um rank dos usuarios
+    return await getConnection().query(`
+      SELECT up.nome, up.cpf, up.email_empresarial,
+        count(DISTINCT(uqc.quiz_nome)) as quiz,
+        count(DISTINCT(udc.desafio_nome)) as desafio,
+        count(DISTINCT(utc.trilha_nome)) as trilha,
+        count(DISTINCT(ucc.curso_nome)) as curso
+      FROM  usuario_perfil up
+        LEFT JOIN usuario_quiz_conclusao uqc on uqc.id_usuario = up.id_usuario 
+        LEFT JOIN usuario_desafio_conclusao udc on udc.id_usuario = up.id_usuario
+        LEFT JOIN usuario_trilha_conclusao utc on utc.id_usuario = up.id_usuario
+        LEFT JOIN usuario_curso_conclusao ucc on ucc.id_usuario = up.id_usuario
+      WHERE
+        up.nome != 'admin'
+      GROUP BY up.nome
+    `,[])
+  }
+  async carregarNotasDesafiosUsuarios() {
+    //carregar os Desafios e embaixo o ultimo envio dos usuarios e suas notas
+    return await getConnection().query(`
+      SELECT up.nome, up.cpf, up.email_empresarial, udc.desafio_nome,
+        udcfn.stamp_created as data_feedback, udcfn.nota
+      FROM
+        usuario_perfil up
+        INNER JOIN udc_feedback_nota udcfn on udcfn.id_usuario = up.id_usuario 
+        INNER JOIN usuario_desafio_conclusao udc on udc.id_usuario = up.id_usuario AND udc.feedback_recebido_SN = 'S'
+      WHERE
+        up.nome != 'admin'
+      ORDER BY
+        udcfn.id_udc DESC
+    `,[])
+  }
+  async carregarQtdConclusaoCursos() {
+    //Trago todos os cursos e a qtde que eles foram concluidos
+    
+    
+  }
+  async carregarQtdConclusaoQuizzes() {
+    //Trago todos os quizzes e a qtde que eles foram concluidos
+    
+    
+  }
+  async carregarQtdConclusaoDesafios() {
+    //Trago todos os desafios e a qtde que eles foram concluidos
+    
+    
+  }
   
 }

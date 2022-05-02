@@ -421,4 +421,42 @@ export class UsuarioService extends BaseServiceGeneric {
     }
     return this.createReturn(200, retorno)
   }
+
+  async carregarRanqueamentoUsuarios(): Promise<BasicResponseInterface> {
+    let retorno = []
+    //Baseado na quantidade de desafios/quizzes/cursos enviados eu monto um rank dos usuarios
+    retorno = (await this.usuarioRepository.carregarRanqueamentoUsuarios()).map(usu => ({
+      ...usu,
+      total: parseInt(usu.quiz) + parseInt(usu.desafio) + parseInt(usu.trilha) + parseInt(usu.curso)
+    })).sort((a, b) => {
+      if (a.total > b.total) return -1
+      else if (a.total < b.total) return 1
+      else return 0
+    })
+    return this.createReturn(200, retorno)
+  }
+  async carregarNotasDesafiosUsuarios(): Promise<BasicResponseInterface> {
+    let retorno = []
+    //carregar os Desafios e embaixo o ultimo envio dos usuarios e suas notas
+    retorno = await this.usuarioRepository.carregarNotasDesafiosUsuarios()
+    return this.createReturn(200, retorno)
+  }
+  async carregarQtdConclusaoCursos(): Promise<BasicResponseInterface> {
+    const retorno = []
+    //Trago todos os cursos e a qtde que eles foram concluidos
+    
+    return this.createReturn(200, retorno)
+  }
+  async carregarQtdConclusaoQuizzes(): Promise<BasicResponseInterface> {
+    const retorno = []
+    //Trago todos os quizzes e a qtde que eles foram concluidos
+    
+    return this.createReturn(200, retorno)
+  }
+  async carregarQtdConclusaoDesafios(): Promise<BasicResponseInterface> {
+    const retorno = []
+    //Trago todos os desafios e a qtde que eles foram concluidos
+    
+    return this.createReturn(200, retorno)
+  }
 }
