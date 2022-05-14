@@ -495,24 +495,36 @@ export class UsuarioRepository {
         INNER JOIN usuario_desafio_conclusao udc on udc.id_usuario = up.id_usuario AND udc.feedback_recebido_SN = 'S'
       WHERE
         up.nome != 'admin'
+      GROUP BY
+      	up.cpf
       ORDER BY
         udcfn.id_udc DESC
     `,[])
   }
   async carregarQtdConclusaoCursos() {
     //Trago todos os cursos e a qtde que eles foram concluidos
-    
+    return await getConnection().query(`
+      SELECT ucc.curso_nome, count(ucc.id_usuario_curso_conclusao)
+      FROM usuario_curso_conclusao as ucc
+      GROUP BY ucc.curso_nome
+    `,[])
     
   }
   async carregarQtdConclusaoQuizzes() {
     //Trago todos os quizzes e a qtde que eles foram concluidos
-    
-    
+    return await getConnection().query(`
+      SELECT  uqc.quiz_nome, count(DISTINCT(uqc.id_usuario))
+      FROM usuario_quiz_conclusao as uqc
+      GROUP BY uqc.quiz_nome
+    `,[])
   }
   async carregarQtdConclusaoDesafios() {
     //Trago todos os desafios e a qtde que eles foram concluidos
-    
-    
+    return await getConnection().query(`
+      SELECT  udc.desafio_nome, count(DISTINCT(udc.id_usuario))
+      FROM usuario_desafio_conclusao as udc
+      GROUP BY udc.desafio_nome
+    `,[])
   }
   
 }
