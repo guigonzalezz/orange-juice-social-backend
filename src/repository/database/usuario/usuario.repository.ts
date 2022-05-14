@@ -504,7 +504,7 @@ export class UsuarioRepository {
   async carregarQtdConclusaoCursos() {
     //Trago todos os cursos e a qtde que eles foram concluidos
     return await getConnection().query(`
-      SELECT ucc.curso_nome, count(ucc.id_usuario_curso_conclusao)
+      SELECT ucc.curso_nome, count(ucc.id_usuario_curso_conclusao) as qtd
       FROM usuario_curso_conclusao as ucc
       GROUP BY ucc.curso_nome
     `,[])
@@ -513,7 +513,7 @@ export class UsuarioRepository {
   async carregarQtdConclusaoQuizzes() {
     //Trago todos os quizzes e a qtde que eles foram concluidos
     return await getConnection().query(`
-      SELECT  uqc.quiz_nome, count(DISTINCT(uqc.id_usuario))
+      SELECT  uqc.quiz_nome, count(DISTINCT(uqc.id_usuario)) as qtd
       FROM usuario_quiz_conclusao as uqc
       GROUP BY uqc.quiz_nome
     `,[])
@@ -521,7 +521,7 @@ export class UsuarioRepository {
   async carregarQtdConclusaoDesafios() {
     //Trago todos os desafios e a qtde que eles foram concluidos
     return await getConnection().query(`
-      SELECT  udc.desafio_nome, count(DISTINCT(udc.id_usuario))
+      SELECT  udc.desafio_nome, count(DISTINCT(udc.id_usuario)) as qtd
       FROM usuario_desafio_conclusao as udc
       GROUP BY udc.desafio_nome
     `,[])

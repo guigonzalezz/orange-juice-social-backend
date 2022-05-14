@@ -438,7 +438,19 @@ export class UsuarioService extends BaseServiceGeneric {
   async carregarNotasDesafiosUsuarios(): Promise<BasicResponseInterface> {
     let retorno = []
     //carregar os Desafios e embaixo o ultimo envio dos usuarios e suas notas
-    retorno = await this.usuarioRepository.carregarNotasDesafiosUsuarios()
+    let desafios = await this.usuarioRepository.carregarQtdConclusaoDesafios()
+    let notas_usuarios = await this.usuarioRepository.carregarNotasDesafiosUsuarios()
+    retorno = desafios.map(d => {
+      return {
+        ...d,
+        usuarios: notas_usuarios.filter(nu => nu.desafio_nome == d.desafio_nome)
+      }
+    })
+    retorno = retorno.filter(r=>r.usuarios.length != 0).sort((a,b)=>{
+      if (a.qtd > b.qtd) return -1
+      else if (a.qtd < b.qtd) return 1
+      else return 0
+    })
     return this.createReturn(200, retorno)
   }
   async carregarQtdConclusaoCursos(): Promise<BasicResponseInterface> {
