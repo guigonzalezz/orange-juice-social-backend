@@ -507,6 +507,7 @@ export class UsuarioRepository {
       SELECT ucc.curso_nome, count(ucc.id_usuario_curso_conclusao) as qtd
       FROM usuario_curso_conclusao as ucc
       GROUP BY ucc.curso_nome
+      ORDER BY qtd DESC
     `,[])
     
   }
@@ -516,6 +517,7 @@ export class UsuarioRepository {
       SELECT  uqc.quiz_nome, count(DISTINCT(uqc.id_usuario)) as qtd
       FROM usuario_quiz_conclusao as uqc
       GROUP BY uqc.quiz_nome
+      ORDER BY qtd DESC
     `,[])
   }
   async carregarQtdConclusaoDesafios() {
@@ -524,6 +526,7 @@ export class UsuarioRepository {
       SELECT  udc.desafio_nome, count(DISTINCT(udc.id_usuario)) as qtd
       FROM usuario_desafio_conclusao as udc
       GROUP BY udc.desafio_nome
+      ORDER BY qtd DESC
     `,[])
   }
   
