@@ -28,6 +28,7 @@ Foi criado uma plataforma web onde sera disponibilizado o acesso para o colabora
 
 #### Link utéis
 ##### [Aplicação no Heroku](https://orange-juice-social-frontend.herokuapp.com)
+##### [API no Heroku](https://orange-juice-social-backend.herokuapp.com/)
 ##### [Video explicando o projeto](https://youtu.be/VGPHE_CCFJA)
 
 <hr/>
